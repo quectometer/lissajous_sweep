@@ -1,4 +1,4 @@
-This simulation is intended to help you understand Lissajous figures and sweep behavior.
+This simulation is intended to help you understand Lissajous curve and sweep behavior.
 
 Click the link to run the simulation in your browser
 
