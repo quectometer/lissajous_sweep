@@ -1,0 +1,589 @@
+
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lissajous / Sweep Oscilloscope (Browser)</title>
+  <style>
+    :root {
+      --bg: #0b0c0f;
+      --panel: #11131a;
+      --panel-alt: #141720;
+      --grid: #2a2d38;
+      --text: #e8ecf1;
+      --muted: #a9b1bb;
+      --accent: #e74a3b; /* red trace */
+      --blue: #3da5ff;
+      --orange: #ff9f1a;
+      --line: #cfd6de;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 16px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    h1 { font-size: 18px; margin: 0 0 8px 0; font-weight: 600; }
+    .app {
+      display: grid;
+      grid-template-columns: 4fr 1.6fr 2.2fr;
+      grid-template-rows: 4fr 1.9fr;
+      gap: 14px 18px;
+      height: 86vh;
+      min-height: 640px;
+    }
+    .card {
+      background: linear-gradient(180deg, var(--panel), var(--panel-alt));
+      border: 1px solid #1b1e28;
+      border-radius: 14px;
+      box-shadow: 0 6px 22px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03);
+      padding: 10px 12px;
+      position: relative;
+      overflow: hidden;
+    }
+    .title {
+      position: absolute;
+      left: 12px; top: 10px;
+      font-size: 13px; color: var(--muted);
+      letter-spacing: 0.2px;
+    }
+    canvas { width: 100%; height: 100%; display: block; }
+    /* Controls */
+    .controls {
+      display: grid;
+      grid-template-rows: auto auto auto 1fr;
+      gap: 10px;
+    }
+    .panel-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+    fieldset {
+      border: 1px solid #242736;
+      border-radius: 10px;
+      padding: 8px;
+      margin: 0;
+      min-inline-size: auto;
+    }
+    fieldset legend {
+      padding: 0 6px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .kv {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      align-items: center;
+      gap: 8px;
+    }
+    .kv input[type="number"] {
+      width: 100%;
+      background: #0f1219;
+      border: 1px solid #242736;
+      border-radius: 8px;
+      color: var(--text);
+      padding: 6px 8px;
+      font-size: 12px;
+    }
+    .kv input[type="number"]::-webkit-outer-spin-button,
+    .kv input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none; margin: 0;
+    }
+    .kv input[type="number"] { -moz-appearance: textfield; }
+    select, button, label.chk {
+      background: #0f1219;
+      border: 1px solid #242736;
+      border-radius: 10px;
+      color: var(--text);
+      padding: 8px 10px;
+      font-size: 12px;
+    }
+    select { width: 100%; }
+    .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    button:hover { border-color: #2e3448; filter: brightness(1.02); }
+    .hint { font-size: 12px; color: var(--muted); }
+    .gridline {
+      position: absolute; inset: 0; pointer-events: none;
+      opacity: 0.1;
+    }
+  </style>
+</head>
+<body>
+  <h1>Lissajous / Sweep Oscilloscope（ブラウザ版・単一HTML）</h1>
+  <div class="app">
+    <div class="card" id="xyCard" style="grid-column: 1 / span 1; grid-row: 1 / span 1;">
+      <div class="title">Lissajous / Sweep（灰: 全体, 赤: トレース）</div>
+      <canvas id="xy"></canvas>
+    </div>
+    <div class="card" id="ytCard" style="grid-column: 2 / span 1; grid-row: 1 / span 1;">
+      <div class="title">Y input y(t) — XY の右側</div>
+      <canvas id="yt"></canvas>
+    </div>
+    <div class="card" id="xtCard" style="grid-column: 1 / span 1; grid-row: 2 / span 1;">
+      <div class="title">X input x(t) — 時間は下向き（+）</div>
+      <canvas id="xt"></canvas>
+    </div>
+
+    <div class="card controls" style="grid-column: 3 / span 1; grid-row: 1 / span 2;">
+      <div class="panel-title">Controls</div>
+
+      <fieldset>
+        <legend>Waveform</legend>
+        <div class="row">
+          <div class="kv">
+            <label for="kindX">X waveform</label>
+            <select id="kindX">
+              <option value="sin">sin</option>
+              <option value="saw">saw</option>
+            </select>
+          </div>
+          <div class="kv">
+            <label for="kindY">Y waveform</label>
+            <select id="kindY">
+              <option value="sin">sin</option>
+              <option value="saw">saw</option>
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Parameters</legend>
+        <div class="row">
+          <div class="kv"><label>Ax</label><input id="Ax" type="number" step="0.001" min="0" max="5" value="1.0"></div>
+          <div class="kv"><label>Ay</label><input id="Ay" type="number" step="0.001" min="0" max="5" value="1.0"></div>
+          <div class="kv"><label>ωx</label><input id="wx" type="number" step="0.001" min="0.1" max="20" value="3.0"></div>
+          <div class="kv"><label>ωy</label><input id="wy" type="number" step="0.001" min="0.1" max="20" value="2.0"></div>
+          <div class="kv"><label>φx</label><input id="phx" type="number" step="0.001" min="0" max="6.283185307179586" value="0.0"></div>
+          <div class="kv"><label>φy</label><input id="phy" type="number" step="0.001" min="0" max="6.283185307179586" value="0.0"></div>
+          <div class="kv"><label>speed</label><input id="speed" type="number" step="0.01" min="0.1" max="5.0" value="1.0"></div>
+        </div>
+      </fieldset>
+
+      <div class="btns">
+        <button id="pause">Pause/Play</button>
+        <button id="reset">Reset</button>
+      </div>
+
+      <div>
+        <label class="chk" style="display:inline-flex;align-items:center;gap:8px;padding:8px 10px;">
+          <input id="guides" type="checkbox" checked style="transform:scale(1.2); margin-right:6px;"> guides
+        </label>
+      </div>
+
+      <div class="hint">Tips: 入力欄は直接編集できます。Time window = 4 s（下向き）。</div>
+    </div>
+  </div>
+
+  <script>
+    // --- Utilities ---
+    const TWO_PI = Math.PI * 2;
+    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+    function saw(theta) {
+      const x = theta / TWO_PI;
+      return 2.0 * (x - Math.floor(x + 0.5));
+    }
+    function wave(A, w, ph, t, kind) {
+      const arg = w * t + ph;
+      return A * (kind === 'sin' ? Math.sin(arg) : saw(arg));
+    }
+    function rationalApprox(r, maxDen=64, tol=1e-6) {
+      if (r <= 0) return [0,1];
+      let pBest = 1, qBest = 1, errBest = Math.abs(r - 1.0);
+      for (let q=1; q<=maxDen; q++) {
+        const p = Math.round(r * q);
+        if (p === 0) continue;
+        const err = Math.abs(r - p/q);
+        if (err < errBest - 1e-12) {
+          errBest = err; pBest = p; qBest = q;
+          if (errBest < tol) break;
+        }
+      }
+      return [pBest, qBest];
+    }
+
+    // --- State ---
+    const state = {
+      Ax: 1.0, Ay: 1.0, wx: 3.0, wy: 2.0, phx: 0.0, phy: 0.0,
+      kindx: 'sin', kindy: 'sin', speed: 1.0,
+      running: true, tNow: 0.0, WIN: 4.0,
+      xHist: [], yHist: [], tHist: [],
+      lastX: null, lastY: null,
+      fullXY: [], // array of stroke segments: [{x:[], y:[]}]
+      margin: 1.1,
+      maxKeep: 1000000, maxDrawXY: 12000, maxDrawTime: 3000, maxFull: 20000
+    };
+
+    // --- Canvas / Layout ---
+    const xy = document.getElementById('xy');
+    const xt = document.getElementById('xt');
+    const yt = document.getElementById('yt');
+    const canvases = [xy, xt, yt];
+
+    function resizeCanvases() {
+      for (const c of canvases) {
+        const rect = c.getBoundingClientRect();
+        c.width = Math.max(100, Math.floor(rect.width * window.devicePixelRatio));
+        c.height = Math.max(100, Math.floor(rect.height * window.devicePixelRatio));
+      }
+    }
+    window.addEventListener('resize', resizeCanvases);
+    resizeCanvases();
+
+    // --- Controls ---
+    const el = (id) => document.getElementById(id);
+    function readParams() {
+      state.Ax = clamp(parseFloat(el('Ax').value)||1.0, 0, 5);
+      state.Ay = clamp(parseFloat(el('Ay').value)||1.0, 0, 5);
+      state.wx = clamp(parseFloat(el('wx').value)||3.0, 0.1, 20);
+      state.wy = clamp(parseFloat(el('wy').value)||2.0, 0.1, 20);
+      state.phx = clamp(parseFloat(el('phx').value)||0.0, 0, TWO_PI);
+      state.phy = clamp(parseFloat(el('phy').value)||0.0, 0, TWO_PI);
+      state.speed = clamp(parseFloat(el('speed').value)||1.0, 0.1, 5.0);
+      state.kindx = el('kindX').value;
+      state.kindy = el('kindY').value;
+    }
+    function resetHist() {
+      state.tNow = 0.0;
+      state.tHist.length = state.xHist.length = state.yHist.length = 0;
+      state.lastX = state.lastY = null;
+    }
+
+    function recomputeFullCurve() {
+      // Build full closed-form (or long) Lissajous path for current params
+      const {Ax, wx, phx, kindx, Ay, wy, phy, kindy, maxFull} = state;
+      let ratio = wx / Math.max(wy, 1e-12);
+      let [p, q] = rationalApprox(ratio, 64, 1e-7);
+      const Tfull = 2.0 * Math.PI * q / Math.max(wy, 1e-9);
+      const Nbase = Math.min(4000 * q, 120000);
+      const N = Math.min(Nbase, 5 * maxFull);
+      const dt = Tfull / N;
+      const thrX = 1.5 * Math.max(Ax, 1e-12);
+      const thrY = 1.5 * Math.max(Ay, 1e-12);
+
+      const segs = [];
+      let xPrev = null, yPrev = null;
+      let xSeg = [], ySeg = [];
+      for (let i=0, t=0; i<=N; i++, t+=dt) {
+        const xx = wave(Ax, wx, phx, t, kindx);
+        const yy = wave(Ay, wy, phy, t, kindy);
+        if (xPrev !== null) {
+          if (Math.abs(xx - xPrev) > thrX || Math.abs(yy - yPrev) > thrY) {
+            if (xSeg.length > 1) segs.push({x: xSeg, y: ySeg});
+            xSeg = []; ySeg = [];
+          }
+        }
+        xSeg.push(xx); ySeg.push(yy);
+        xPrev = xx; yPrev = yy;
+      }
+      if (xSeg.length > 1) segs.push({x: xSeg, y: ySeg});
+
+      // Decimate to maxFull points total
+      const totalPts = segs.reduce((s,g)=>s+g.x.length, 0);
+      if (totalPts > maxFull) {
+        const keepRatio = maxFull / totalPts;
+        for (const g of segs) {
+          const step = Math.max(1, Math.floor(1/keepRatio));
+          g.x = g.x.filter((_,i)=> i%step===0);
+          g.y = g.y.filter((_,i)=> i%step===0);
+        }
+      }
+
+      state.fullXY = segs;
+    }
+
+    function onAnyParamChanged() {
+      readParams();
+      resetHist();
+      recomputeFullCurve();
+    }
+
+    ['Ax','Ay','wx','wy','phx','phy','speed','kindX','kindY'].forEach(id => {
+      el(id).addEventListener('change', onAnyParamChanged);
+      el(id).addEventListener('input', (e)=>{
+        // Only lightweight validation on input
+        if (e.target.id==='phx' || e.target.id==='phy') {
+          if (parseFloat(e.target.value) > TWO_PI) e.target.value = TWO_PI.toFixed(6);
+        }
+      });
+    });
+
+    el('pause').addEventListener('click', ()=> state.running = !state.running );
+    el('reset').addEventListener('click', ()=> { resetHist(); recomputeFullCurve(); });
+
+    // --- Drawing helpers ---
+    function drawGrid(ctx, x0, y0, x1, y1, xTicks=6, yTicks=6) {
+      ctx.save();
+      ctx.strokeStyle = '#a9b1bb16'; // faint
+      ctx.lineWidth = 1;
+      const w = x1-x0, h = y1-y0;
+      for (let i=1;i<xTicks;i++){
+        const x = x0 + (w*i/xTicks);
+        ctx.beginPath(); ctx.moveTo(x, y0); ctx.lineTo(x, y1); ctx.stroke();
+      }
+      for (let i=1;i<yTicks;i++){
+        const y = y0 + (h*i/yTicks);
+        ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function strokePath(ctx, xs, ys, color, width=1.2, alpha=1.0) {
+      if (!xs || xs.length<2) return;
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.strokeStyle = color; ctx.lineWidth = width; ctx.beginPath();
+      ctx.moveTo(xs[0], ys[0]);
+      for (let i=1;i<xs.length;i++) ctx.lineTo(xs[i], ys[i]);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // --- Axes ranges (auto from Ax/Ay) ---
+    function ranges() {
+      const R = state.margin * Math.max(Math.max(state.Ax, state.Ay), 1.0);
+      return {xmin:-R, xmax:R, ymin:-R, ymax:R};
+    }
+
+    // World->Screen mappers per canvas
+    function makeMapperXY(canvas) {
+      const {width:w, height:h} = canvas;
+      const {xmin,xmax,ymin,ymax} = ranges();
+      const sx = (x) => ( (x - xmin) / (xmax - xmin) ) * (w-20) + 10;
+      const sy = (y) => ( 1 - (y - ymin) / (ymax - ymin) ) * (h-20) + 10;
+      return {sx, sy, xmin,xmax,ymin,ymax, w, h};
+    }
+    function makeMapperXT(canvas) {
+      const {width:w, height:h} = canvas;
+      const {xmin,xmax} = ranges();
+      const tmin = 0, tmax = state.WIN;
+      const sx = (x) => ( (x - xmin) / (xmax - xmin) ) * (w-20) + 10;
+      const sy = (t) => ( (t - tmin) / (tmax - tmin) ) * (h-20) + 10; // downward
+      return {sx, sy, xmin,xmax, tmin, tmax, w, h};
+    }
+    function makeMapperYT(canvas) {
+      const {width:w, height:h} = canvas;
+      const {ymin,ymax} = ranges();
+      const tmin = 0, tmax = state.WIN;
+      const sx = (t) => ( (t - tmin) / (tmax - tmin) ) * (w-20) + 10;
+      const sy = (y) => ( 1 - (y - ymin) / (ymax - ymin) ) * (h-20) + 10;
+      return {sx, sy, ymin,ymax, tmin, tmax, w, h};
+    }
+
+    function decimate(xs, ys, maxPts) {
+      const n = xs.length;
+      if (n <= maxPts) return {xs, ys};
+      const step = Math.max(1, Math.floor(n / maxPts));
+      const xd = [], yd = [];
+      for (let i=0;i<n;i+=step) { xd.push(xs[i]); yd.push(ys[i]); }
+      return {xs: xd, ys: yd};
+    }
+
+    // --- Main render ---
+    let lastTs = performance.now();
+    function tick(ts) {
+      const dt = Math.min(50, (ts - lastTs)) / 1000; // clamp
+      lastTs = ts;
+
+      if (state.running) {
+        state.tNow += dt * state.speed;
+        const xNow = wave(state.Ax, state.wx, state.phx, state.tNow, state.kindx);
+        const yNow = wave(state.Ay, state.wy, state.phy, state.tNow, state.kindy);
+
+        const thrX = 1.5 * Math.max(state.Ax, 1e-12);
+        const thrY = 1.5 * Math.max(state.Ay, 1e-12);
+        if (state.lastX !== null && (Math.abs(xNow - state.lastX) > thrX || Math.abs(yNow - state.lastY) > thrY)) {
+          state.xHist.push(NaN); state.yHist.push(NaN); state.tHist.push(state.tNow);
+        }
+        state.lastX = xNow; state.lastY = yNow;
+
+        state.xHist.push(xNow); state.yHist.push(yNow); state.tHist.push(state.tNow);
+
+        if (state.tHist.length > state.maxKeep) {
+          const drop = state.tHist.length - state.maxKeep;
+          state.tHist.splice(0, drop); state.xHist.splice(0, drop); state.yHist.splice(0, drop);
+        }
+      }
+
+      // Compute window
+      const tmin = Math.max(0, state.tNow - state.WIN);
+      // find start index
+      let i0 = 0;
+      while (i0 < state.tHist.length && state.tHist[i0] < tmin) i0++;
+      const tWin = state.tHist.slice(i0);
+      const xWin = state.xHist.slice(i0);
+      const yWin = state.yHist.slice(i0);
+
+      // --- Draw XY ---
+      {
+        const ctx = xy.getContext('2d');
+        const map = makeMapperXY(xy);
+        ctx.clearRect(0,0,map.w,map.h);
+        drawGrid(ctx, 10, 10, map.w-10, map.h-10, 6, 6);
+
+        // full curve (gray, possibly multi segments for saw)
+        ctx.save();
+        ctx.globalAlpha = 0.85;
+        ctx.strokeStyle = '#cfd6de';
+        ctx.lineWidth = 1.0;
+        for (const seg of state.fullXY) {
+          if (!seg || seg.x.length<2) continue;
+          ctx.beginPath();
+          ctx.moveTo(map.sx(seg.x[0]), map.sy(seg.y[0]));
+          for (let i=1;i<seg.x.length;i++) ctx.lineTo(map.sx(seg.x[i]), map.sy(seg.y[i]));
+          ctx.stroke();
+        }
+        ctx.restore();
+
+        // trajectory (red) with decimation
+        const xs = [], ys = [];
+        let xPrev=null, yPrev=null;
+        for (let i=0;i<xWin.length;i++) {
+          const xv = xWin[i], yv = yWin[i];
+          if (Number.isNaN(xv) || Number.isNaN(yv)) {
+            // flush stroke
+            if (xs.length>1) {
+              const d = decimate(xs, ys, state.maxDrawXY);
+              strokePath(ctx, d.xs.map(map.sx), d.ys.map(map.sy), '#e74a3b', 2.0, 1.0);
+            }
+            xs.length = ys.length = 0;
+            xPrev=null; yPrev=null;
+            continue;
+          }
+          xs.push(xv); ys.push(yv);
+          xPrev = xv; yPrev = yv;
+        }
+        if (xs.length>1) {
+          const d = decimate(xs, ys, state.maxDrawXY);
+          strokePath(ctx, d.xs.map(map.sx), d.ys.map(map.sy), '#e74a3b', 2.0, 1.0);
+        }
+
+        // current point + guides
+        const xNow = state.lastX ?? 0, yNow = state.lastY ?? 0;
+        const X = map.sx(xNow), Y = map.sy(yNow);
+
+        if (el('guides').checked) {
+          // horizontal: from point to RIGHT only
+          ctx.save();
+          ctx.setLineDash([6,6]); ctx.strokeStyle = '#999'; ctx.globalAlpha = 0.55;
+          ctx.beginPath(); ctx.moveTo(X, Y); ctx.lineTo(map.w-10, Y); ctx.stroke();
+          // vertical: from BOTTOM to point only
+          ctx.beginPath(); ctx.moveTo(X, map.h-10); ctx.lineTo(X, Y); ctx.stroke();
+          ctx.restore();
+        }
+
+        // dot
+        ctx.save();
+        ctx.fillStyle = '#0b0c0f';
+        ctx.strokeStyle = '#e74a3b';
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(X, Y, 6, 0, TWO_PI); ctx.fill(); ctx.stroke();
+        ctx.restore();
+      }
+
+      // --- Draw x(t): time downward ---
+      {
+        const ctx = xt.getContext('2d');
+        const map = makeMapperXT(xt);
+        ctx.clearRect(0,0,map.w,map.h);
+        drawGrid(ctx, 10, 10, map.w-10, map.h-10, 6, 6);
+
+        // path
+        const xs=[], ts=[];
+        for (let i=0;i<tWin.length;i++) {
+          const tv = tWin[i] - tmin;
+          const xv = xWin[i];
+          if (Number.isNaN(xv)) {
+            if (xs.length>1) {
+              const d = decimate(xs, ts, state.maxDrawTime);
+              strokePath(ctx, d.xs.map(map.sx), d.ys.map(map.sy), '#3da5ff', 1.6, 1.0);
+            }
+            xs.length = ts.length = 0;
+            continue;
+          }
+          xs.push(xv); ts.push(tv);
+        }
+        if (xs.length>1) {
+          const d = decimate(xs, ts, state.maxDrawTime);
+          strokePath(ctx, d.xs.map(map.sx), d.ys.map(map.sy), '#3da5ff', 1.6, 1.0);
+        }
+
+        const xNow = state.lastX ?? 0;
+        const tRel = state.tNow - tmin;
+        const X = map.sx(xNow), Y = map.sy(tRel);
+
+        if (el('guides').checked) {
+          ctx.save();
+          ctx.setLineDash([6,6]); ctx.strokeStyle = '#999'; ctx.globalAlpha = 0.45;
+          // vertical line at x_now
+          ctx.beginPath(); ctx.moveTo(X, 10); ctx.lineTo(X, map.h-10); ctx.stroke();
+          ctx.restore();
+        }
+
+        // dot
+        ctx.save();
+        ctx.fillStyle = '#0b0c0f';
+        ctx.strokeStyle = '#3da5ff';
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(X, Y, 5.5, 0, TWO_PI); ctx.fill(); ctx.stroke();
+        ctx.restore();
+      }
+
+      // --- Draw y(t): time to right ---
+      {
+        const ctx = yt.getContext('2d');
+        const map = makeMapperYT(yt);
+        ctx.clearRect(0,0,map.w,map.h);
+        drawGrid(ctx, 10, 10, map.w-10, map.h-10, 6, 6);
+
+        const ys=[], ts=[];
+        for (let i=0;i<tWin.length;i++) {
+          const tv = tWin[i] - tmin;
+          const yv = yWin[i];
+          if (Number.isNaN(yv)) {
+            if (ys.length>1) {
+              const d = decimate(ts, ys, state.maxDrawTime);
+              strokePath(ctx, d.xs.map(map.sx), d.ys.map(map.sy), '#ff9f1a', 1.6, 1.0);
+            }
+            ys.length = ts.length = 0;
+            continue;
+          }
+          ts.push(tv); ys.push(yv);
+        }
+        if (ys.length>1) {
+          const d = decimate(ts, ys, state.maxDrawTime);
+          strokePath(ctx, d.xs.map(map.sx), d.ys.map(map.sy), '#ff9f1a', 1.6, 1.0);
+        }
+
+        const yNow = state.lastY ?? 0;
+        const tRel = state.tNow - tmin;
+        const X = map.sx(tRel), Y = map.sy(yNow);
+
+        if (el('guides').checked) {
+          ctx.save();
+          ctx.setLineDash([6,6]); ctx.strokeStyle = '#999'; ctx.globalAlpha = 0.45;
+          // horizontal line at y_now
+          ctx.beginPath(); ctx.moveTo(10, Y); ctx.lineTo(map.w-10, Y); ctx.stroke();
+          ctx.restore();
+        }
+
+        // dot
+        ctx.save();
+        ctx.fillStyle = '#0b0c0f';
+        ctx.strokeStyle = '#ff9f1a';
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(X, Y, 5.5, 0, TWO_PI); ctx.fill(); ctx.stroke();
+        ctx.restore();
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    // Init
+    onAnyParamChanged();
+    recomputeFullCurve();
+    requestAnimationFrame(tick);
+  </script>
+</body>
+</html>
