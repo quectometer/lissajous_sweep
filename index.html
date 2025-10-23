@@ -1,10 +1,9 @@
-
 <!doctype html>
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Lissajous / Sweep Oscilloscope (Browser)</title>
+  <title>Lissajous / Sweep Oscilloscope (Browser) — with Sliders</title>
   <style>
     :root {
       --bg: #0b0c0f;
@@ -50,6 +49,7 @@
       letter-spacing: 0.2px;
     }
     canvas { width: 100%; height: 100%; display: block; }
+
     /* Controls */
     .controls {
       display: grid;
@@ -70,12 +70,13 @@
       font-size: 12px;
     }
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-    .kv {
-      display: grid;
-      grid-template-columns: 90px 1fr;
-      align-items: center;
-      gap: 8px;
-    }
+
+    /* Parameters: vertical single column for longer sliders */
+    .params { display: grid; grid-template-columns: 1fr; gap: 10px; }
+
+    /* Key-value rows now support a number + slider pair */
+    .kv { display: grid; grid-template-columns: 76px 90px 1fr; align-items: center; gap: 8px; }
+    .kv label { white-space: nowrap; }
     .kv input[type="number"] {
       width: 100%;
       background: #0f1219;
@@ -85,11 +86,29 @@
       padding: 6px 8px;
       font-size: 12px;
     }
-    .kv input[type="number"]::-webkit-outer-spin-button,
-    .kv input[type="number"]::-webkit-inner-spin-button {
-      -webkit-appearance: none; margin: 0;
+    .kv input[type="range"] {
+      width: 100%;
+      appearance: none;
+      height: 22px;
+      background: #0f1219;
+      border: 1px solid #242736;
+      border-radius: 8px;
+      padding: 0 6px;
     }
+    .kv input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: #cfd6de; border: none;
+      box-shadow: 0 0 0 2px #0f1219;
+    }
+    .kv input[type="range"]::-moz-range-thumb {
+      width: 14px; height: 14px; border-radius: 50%;
+      background: #cfd6de; border: none;
+    }
+    .kv input[type="number"]::-webkit-outer-spin-button,
+    .kv input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     .kv input[type="number"] { -moz-appearance: textfield; }
+
     select, button, label.chk {
       background: #0f1219;
       border: 1px solid #242736;
@@ -100,16 +119,18 @@
     }
     select { width: 100%; }
     .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    /* smaller buttons height as requested */
+    .btns button { padding: 6px 8px; font-size: 11px; line-height: 1.1; }
     button:hover { border-color: #2e3448; filter: brightness(1.02); }
     .hint { font-size: 12px; color: var(--muted); }
-    .gridline {
-      position: absolute; inset: 0; pointer-events: none;
-      opacity: 0.1;
-    }
+    select { width: 100%; }
+    .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    button:hover { border-color: #2e3448; filter: brightness(1.02); }
+    .hint { font-size: 12px; color: var(--muted); }
   </style>
 </head>
 <body>
-  <h1>Lissajous / Sweep Oscilloscope（ブラウザ版・単一HTML）</h1>
+  <h1>Lissajous / Sweep Oscilloscope（ブラウザ版・スライダー追加）</h1>
   <div class="app">
     <div class="card" id="xyCard" style="grid-column: 1 / span 1; grid-row: 1 / span 1;">
       <div class="title">Lissajous / Sweep（灰: 全体, 赤: トレース）</div>
@@ -130,14 +151,14 @@
       <fieldset>
         <legend>Waveform</legend>
         <div class="row">
-          <div class="kv">
+          <div class="kv" style="grid-template-columns: 100px 1fr;">
             <label for="kindX">X waveform</label>
             <select id="kindX">
               <option value="sin">sin</option>
               <option value="saw">saw</option>
             </select>
           </div>
-          <div class="kv">
+          <div class="kv" style="grid-template-columns: 100px 1fr;">
             <label for="kindY">Y waveform</label>
             <select id="kindY">
               <option value="sin">sin</option>
@@ -149,14 +170,15 @@
 
       <fieldset>
         <legend>Parameters</legend>
-        <div class="row">
-          <div class="kv"><label>Ax</label><input id="Ax" type="number" step="0.001" min="0" max="5" value="1.0"></div>
-          <div class="kv"><label>Ay</label><input id="Ay" type="number" step="0.001" min="0" max="5" value="1.0"></div>
-          <div class="kv"><label>ωx</label><input id="wx" type="number" step="0.001" min="0.1" max="20" value="3.0"></div>
-          <div class="kv"><label>ωy</label><input id="wy" type="number" step="0.001" min="0.1" max="20" value="2.0"></div>
-          <div class="kv"><label>φx</label><input id="phx" type="number" step="0.001" min="0" max="6.283185307179586" value="0.0"></div>
-          <div class="kv"><label>φy</label><input id="phy" type="number" step="0.001" min="0" max="6.283185307179586" value="0.0"></div>
-          <div class="kv"><label>speed</label><input id="speed" type="number" step="0.01" min="0.1" max="5.0" value="1.0"></div>
+        <div class="params">
+          <div class="kv"><label>Ax</label><input id="Ax" type="number" step="0.1" min="0" max="5" value="1.0"><input id="Ax_s" type="range" step="0.1" min="0" max="5" value="1.0"></div>
+          <div class="kv"><label>Ay</label><input id="Ay" type="number" step="0.1" min="0" max="5" value="1.0"><input id="Ay_s" type="range" step="0.1" min="0" max="5" value="1.0"></div>
+          <div class="kv"><label>ωx</label><input id="wx" type="number" step="0.1" min="0.1" max="20" value="3.0"><input id="wx_s" type="range" step="0.1" min="0.1" max="20" value="3.0"></div>
+          <div class="kv"><label>ωy</label><input id="wy" type="number" step="0.1" min="0.1" max="20" value="2.0"><input id="wy_s" type="range" step="0.1" min="0.1" max="20" value="2.0"></div>
+          <div class="kv"><label>φx</label><input id="phx" type="number" step="0.1" min="0" max="6.283185307179586" value="0.0"><input id="phx_s" type="range" step="0.1" min="0" max="6.283185307179586" value="0.0"></div>
+          <div class="kv"><label>φy</label><input id="phy" type="number" step="0.1" min="0" max="6.283185307179586" value="0.0"><input id="phy_s" type="range" step="0.1" min="0" max="6.283185307179586" value="0.0"></div>
+          <div class="kv"><label>speed</label><input id="speed" type="number" step="0.1" min="0.1" max="5.0" value="1.0"><input id="speed_s" type="range" step="0.1" min="0.1" max="5.0" value="1.0"></div>
+          <div class="kv"><label>window(s)</label><input id="win" type="number" step="0.1" min="1" max="60" value="16"><input id="win_s" type="range" step="0.1" min="1" max="60" value="16"></div>
         </div>
       </fieldset>
 
@@ -165,13 +187,16 @@
         <button id="reset">Reset</button>
       </div>
 
-      <div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
         <label class="chk" style="display:inline-flex;align-items:center;gap:8px;padding:8px 10px;">
           <input id="guides" type="checkbox" checked style="transform:scale(1.2); margin-right:6px;"> guides
         </label>
+        <label class="chk" style="display:inline-flex;align-items:center;gap:8px;padding:8px 10px;">
+          <input id="fullcurve" type="checkbox" checked style="transform:scale(1.2); margin-right:6px;"> full curve
+        </label>
       </div>
 
-      <div class="hint">Tips: 入力欄は直接編集できます。Time window = 4 s（下向き）。</div>
+      <div class=\"hint\">Tips: 数値は直接入力もスライドも可能です。Time window = <span id=\"winHint\">16</span> s（下向き）。</div>
     </div>
   </div>
 
@@ -207,7 +232,7 @@
     const state = {
       Ax: 1.0, Ay: 1.0, wx: 3.0, wy: 2.0, phx: 0.0, phy: 0.0,
       kindx: 'sin', kindy: 'sin', speed: 1.0,
-      running: true, tNow: 0.0, WIN: 4.0,
+      running: true, tNow: 0.0, WIN: 16.0,
       xHist: [], yHist: [], tHist: [],
       lastX: null, lastY: null,
       fullXY: [], // array of stroke segments: [{x:[], y:[]}]
@@ -233,14 +258,40 @@
 
     // --- Controls ---
     const el = (id) => document.getElementById(id);
+
+    function syncPair(numId, rangeId) {
+      const num = el(numId), rng = el(rangeId);
+      // when number changes, update slider and recompute
+      num.addEventListener('input', () => { rng.value = num.value; onAnyParamChanged(); });
+      num.addEventListener('change', () => { rng.value = num.value; onAnyParamChanged(); });
+      // when slider moves, update number and recompute (live)
+      rng.addEventListener('input', () => { num.value = rng.value; onAnyParamChanged(); });
+      rng.addEventListener('change', () => { num.value = rng.value; onAnyParamChanged(); });
+    }
+
+    function bindAllPairs() {
+      syncPair('Ax','Ax_s');
+      syncPair('Ay','Ay_s');
+      syncPair('wx','wx_s');
+      syncPair('wy','wy_s');
+      syncPair('phx','phx_s');
+      syncPair('phy','phy_s');
+      syncPair('speed','speed_s');
+      if (el('win') && el('win_s')) { syncPair('win','win_s'); }
+    }
+
     function readParams() {
-      state.Ax = clamp(parseFloat(el('Ax').value)||1.0, 0, 5);
-      state.Ay = clamp(parseFloat(el('Ay').value)||1.0, 0, 5);
-      state.wx = clamp(parseFloat(el('wx').value)||3.0, 0.1, 20);
-      state.wy = clamp(parseFloat(el('wy').value)||2.0, 0.1, 20);
-      state.phx = clamp(parseFloat(el('phx').value)||0.0, 0, TWO_PI);
-      state.phy = clamp(parseFloat(el('phy').value)||0.0, 0, TWO_PI);
-      state.speed = clamp(parseFloat(el('speed').value)||1.0, 0.1, 5.0);
+      state.Ax = clamp(parseFloat(el('Ax')?.value)||1.0, 0, 5);
+      state.Ay = clamp(parseFloat(el('Ay')?.value)||1.0, 0, 5);
+      state.wx = clamp(parseFloat(el('wx')?.value)||3.0, 0.1, 20);
+      state.wy = clamp(parseFloat(el('wy')?.value)||2.0, 0.1, 20);
+      state.phx = clamp(parseFloat(el('phx')?.value)||0.0, 0, TWO_PI);
+      state.phy = clamp(parseFloat(el('phy')?.value)||0.0, 0, TWO_PI);
+      state.speed = clamp(parseFloat(el('speed')?.value)||1.0, 0.1, 5.0);
+      const wEl = el('win');
+      if (wEl) {
+        state.WIN = clamp(parseFloat(wEl.value)||16.0, 1.0, 60.0);
+      }
       state.kindx = el('kindX').value;
       state.kindy = el('kindY').value;
     }
@@ -295,18 +346,13 @@
 
     function onAnyParamChanged() {
       readParams();
+      const wh = document.getElementById('winHint'); if (wh) wh.textContent = String(state.WIN);
       resetHist();
       recomputeFullCurve();
     }
 
-    ['Ax','Ay','wx','wy','phx','phy','speed','kindX','kindY'].forEach(id => {
+    ['kindX','kindY'].forEach(id => {
       el(id).addEventListener('change', onAnyParamChanged);
-      el(id).addEventListener('input', (e)=>{
-        // Only lightweight validation on input
-        if (e.target.id==='phx' || e.target.id==='phy') {
-          if (parseFloat(e.target.value) > TWO_PI) e.target.value = TWO_PI.toFixed(6);
-        }
-      });
     });
 
     el('pause').addEventListener('click', ()=> state.running = !state.running );
@@ -422,37 +468,35 @@
         ctx.clearRect(0,0,map.w,map.h);
         drawGrid(ctx, 10, 10, map.w-10, map.h-10, 6, 6);
 
-        // full curve (gray, possibly multi segments for saw)
-        ctx.save();
-        ctx.globalAlpha = 0.85;
-        ctx.strokeStyle = '#cfd6de';
-        ctx.lineWidth = 1.0;
-        for (const seg of state.fullXY) {
-          if (!seg || seg.x.length<2) continue;
-          ctx.beginPath();
-          ctx.moveTo(map.sx(seg.x[0]), map.sy(seg.y[0]));
-          for (let i=1;i<seg.x.length;i++) ctx.lineTo(map.sx(seg.x[i]), map.sy(seg.y[i]));
-          ctx.stroke();
+        // full curve (gray, possibly multi segments for saw) — toggleable
+        if (el('fullcurve') && el('fullcurve').checked) {
+          ctx.save();
+          ctx.globalAlpha = 0.85;
+          ctx.strokeStyle = '#cfd6de';
+          ctx.lineWidth = 1.0;
+          for (const seg of state.fullXY) {
+            if (!seg || seg.x.length<2) continue;
+            ctx.beginPath();
+            ctx.moveTo(map.sx(seg.x[0]), map.sy(seg.y[0]));
+            for (let i=1;i<seg.x.length;i++) ctx.lineTo(map.sx(seg.x[i]), map.sy(seg.y[i]));
+            ctx.stroke();
+          }
+          ctx.restore();
         }
-        ctx.restore();
 
         // trajectory (red) with decimation
         const xs = [], ys = [];
-        let xPrev=null, yPrev=null;
         for (let i=0;i<xWin.length;i++) {
           const xv = xWin[i], yv = yWin[i];
           if (Number.isNaN(xv) || Number.isNaN(yv)) {
-            // flush stroke
             if (xs.length>1) {
               const d = decimate(xs, ys, state.maxDrawXY);
               strokePath(ctx, d.xs.map(map.sx), d.ys.map(map.sy), '#e74a3b', 2.0, 1.0);
             }
             xs.length = ys.length = 0;
-            xPrev=null; yPrev=null;
             continue;
           }
           xs.push(xv); ys.push(yv);
-          xPrev = xv; yPrev = yv;
         }
         if (xs.length>1) {
           const d = decimate(xs, ys, state.maxDrawXY);
@@ -489,7 +533,6 @@
         ctx.clearRect(0,0,map.w,map.h);
         drawGrid(ctx, 10, 10, map.w-10, map.h-10, 6, 6);
 
-        // path
         const xs=[], ts=[];
         for (let i=0;i<tWin.length;i++) {
           const tv = tWin[i] - tmin;
@@ -516,12 +559,10 @@
         if (el('guides').checked) {
           ctx.save();
           ctx.setLineDash([6,6]); ctx.strokeStyle = '#999'; ctx.globalAlpha = 0.45;
-          // vertical line at x_now
           ctx.beginPath(); ctx.moveTo(X, 10); ctx.lineTo(X, map.h-10); ctx.stroke();
           ctx.restore();
         }
 
-        // dot
         ctx.save();
         ctx.fillStyle = '#0b0c0f';
         ctx.strokeStyle = '#3da5ff';
@@ -563,12 +604,10 @@
         if (el('guides').checked) {
           ctx.save();
           ctx.setLineDash([6,6]); ctx.strokeStyle = '#999'; ctx.globalAlpha = 0.45;
-          // horizontal line at y_now
           ctx.beginPath(); ctx.moveTo(10, Y); ctx.lineTo(map.w-10, Y); ctx.stroke();
           ctx.restore();
         }
 
-        // dot
         ctx.save();
         ctx.fillStyle = '#0b0c0f';
         ctx.strokeStyle = '#ff9f1a';
@@ -581,6 +620,7 @@
     }
 
     // Init
+    bindAllPairs();
     onAnyParamChanged();
     recomputeFullCurve();
     requestAnimationFrame(tick);
