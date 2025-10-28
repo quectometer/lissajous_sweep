@@ -130,14 +130,14 @@
   </style>
 </head>
 <body>
-  <h1>Lissajous / Sweep Oscilloscope（ブラウザ版・スライダー追加）</h1>
+  <h1>Lissajous / Sweep Oscilloscope</h1>
   <div class="app">
     <div class="card" id="xyCard" style="grid-column: 1 / span 1; grid-row: 1 / span 1;">
       <div class="title">Lissajous / Sweep（灰: 全体, 赤: トレース）</div>
       <canvas id="xy"></canvas>
     </div>
     <div class="card" id="ytCard" style="grid-column: 2 / span 1; grid-row: 1 / span 1;">
-      <div class="title">Y input y(t) — XY の右側</div>
+      <div class="title">Y input y(t) — 時間は右向き（+）</div>
       <canvas id="yt"></canvas>
     </div>
     <div class="card" id="xtCard" style="grid-column: 1 / span 1; grid-row: 2 / span 1;">
@@ -171,10 +171,10 @@
       <fieldset>
         <legend>Parameters</legend>
         <div class="params">
-          <div class="kv"><label>Ax</label><input id="Ax" type="number" step="0.1" min="0" max="5" value="1.0"><input id="Ax_s" type="range" step="0.1" min="0" max="5" value="1.0"></div>
-          <div class="kv"><label>Ay</label><input id="Ay" type="number" step="0.1" min="0" max="5" value="1.0"><input id="Ay_s" type="range" step="0.1" min="0" max="5" value="1.0"></div>
-          <div class="kv"><label>ωx</label><input id="wx" type="number" step="0.1" min="0.1" max="20" value="3.0"><input id="wx_s" type="range" step="0.1" min="0.1" max="20" value="3.0"></div>
-          <div class="kv"><label>ωy</label><input id="wy" type="number" step="0.1" min="0.1" max="20" value="2.0"><input id="wy_s" type="range" step="0.1" min="0.1" max="20" value="2.0"></div>
+          <div class="kv"><label>Ax</label><input id="Ax" type="number" step="0.1" min="0" max="5" value="1.0"><input id="Ax_s" type="range" step="0.1" min="0.1" max="5" value="1.0"></div>
+          <div class="kv"><label>Ay</label><input id="Ay" type="number" step="0.1" min="0" max="5" value="1.0"><input id="Ay_s" type="range" step="0.1" min="0.1" max="5" value="1.0"></div>
+          <div class="kv"><label>ωx</label><input id="wx" type="number" step="0.1" min="0" value="3.0"><input id="wx_s" type="range" step="0.1" min="0" max="20" value="3.0"></div>
+          <div class="kv"><label>ωy</label><input id="wy" type="number" step="0.1" min="0" value="2.0"><input id="wy_s" type="range" step="0.1" min="0" max="20" value="2.0"></div>
           <div class="kv"><label>φx</label><input id="phx" type="number" step="0.1" min="0" max="6.283185307179586" value="0.0"><input id="phx_s" type="range" step="0.1" min="0" max="6.283185307179586" value="0.0"></div>
           <div class="kv"><label>φy</label><input id="phy" type="number" step="0.1" min="0" max="6.283185307179586" value="0.0"><input id="phy_s" type="range" step="0.1" min="0" max="6.283185307179586" value="0.0"></div>
           <div class="kv"><label>speed</label><input id="speed" type="number" step="0.1" min="0.1" max="5.0" value="1.0"><input id="speed_s" type="range" step="0.1" min="0.1" max="5.0" value="1.0"></div>
@@ -196,7 +196,7 @@
         </label>
       </div>
 
-      <div class=\"hint\">Tips: 数値は直接入力もスライドも可能です。Time window = <span id=\"winHint\">16</span> s（下向き）。</div>
+      <div class=\"hint\">Tips: 数値は直接入力もスライドも可能です。描写速度が高すぎると見かけ上のエイリアシングが発生します。</div>
     </div>
   </div>
 
@@ -280,11 +280,35 @@
       if (el('win') && el('win_s')) { syncPair('win','win_s'); }
     }
 
+
+    function bindAdvanced() {
+      const mf = el('maxFull_in');
+      const md = el('maxDrawXY_in');
+      if (mf) {
+        const upd = () => {
+          const v = parseInt(mf.value)||state.maxFull;
+          state.maxFull = Math.max(10000, v);
+          recomputeFullCurve(); drawAll();
+        };
+        mf.addEventListener('input', upd);
+        mf.addEventListener('change', upd);
+      }
+      if (md) {
+        const upd2 = () => {
+          const v = parseInt(md.value)||state.maxDrawXY;
+          state.maxDrawXY = Math.max(1000, v);
+          drawAll();
+        };
+        md.addEventListener('input', upd2);
+        md.addEventListener('change', upd2);
+      }
+    }
+
     function readParams() {
       state.Ax = clamp(parseFloat(el('Ax')?.value)||1.0, 0, 5);
       state.Ay = clamp(parseFloat(el('Ay')?.value)||1.0, 0, 5);
-      state.wx = clamp(parseFloat(el('wx')?.value)||3.0, 0.1, 20);
-      state.wy = clamp(parseFloat(el('wy')?.value)||2.0, 0.1, 20);
+      state.wx = Math.max(0, parseFloat(el('wx')?.value)||0);
+      state.wy = Math.max(0, parseFloat(el('wy')?.value)||0);
       state.phx = clamp(parseFloat(el('phx')?.value)||0.0, 0, TWO_PI);
       state.phy = clamp(parseFloat(el('phy')?.value)||0.0, 0, TWO_PI);
       state.speed = clamp(parseFloat(el('speed')?.value)||1.0, 0.1, 5.0);
@@ -310,6 +334,36 @@
       const Nbase = Math.min(4000 * q, 120000);
       const N = Math.min(Nbase, 5 * maxFull);
       const dt = Tfull / N;
+      const EPS = 1e-9;
+      // Degenerate cases for zero frequencies
+      if (wx < EPS && wy < EPS) {
+        const xx = wave(Ax, 0, phx, 0, kindx);
+        const yy = wave(Ay, 0, phy, 0, kindy);
+        state.fullXY = [{x:[xx,xx], y:[yy,yy]}];
+        return;
+      }
+      if (wx < EPS && wy >= EPS) {
+        const T = 2.0 * Math.PI / Math.max(wy, EPS);
+        const N = Math.min(4000, Math.max(100, Math.floor(5 * maxFull)));
+        const dt = T / N;
+        const x0 = wave(Ax, 0, phx, 0, kindx);
+        const xs = new Array(N+1).fill(x0);
+        const ys = [];
+        for (let i=0,t=0; i<=N; i++, t+=dt) ys.push(wave(Ay, wy, phy, t, kindy));
+        state.fullXY = [{x: xs, y: ys}];
+        return;
+      }
+      if (wy < EPS && wx >= EPS) {
+        const T = 2.0 * Math.PI / Math.max(wx, EPS);
+        const N = Math.min(4000, Math.max(100, Math.floor(5 * maxFull)));
+        const dt = T / N;
+        const y0 = wave(Ay, 0, phy, 0, kindy);
+        const ys = new Array(N+1).fill(y0);
+        const xs = [];
+        for (let i=0,t=0; i<=N; i++, t+=dt) xs.push(wave(Ax, wx, phx, t, kindx));
+        state.fullXY = [{x: xs, y: ys}];
+        return;
+      }
       const thrX = 1.5 * Math.max(Ax, 1e-12);
       const thrY = 1.5 * Math.max(Ay, 1e-12);
 
@@ -620,7 +674,7 @@
     }
 
     // Init
-    bindAllPairs();
+    bindAllPairs(); bindAdvanced();
     onAnyParamChanged();
     recomputeFullCurve();
     requestAnimationFrame(tick);
