@@ -6,16 +6,16 @@
   <title>Lissajous / Sweep Oscilloscope (Browser) — with Sliders</title>
   <style>
     :root {
-      --bg: #0b0c0f;
-      --panel: #11131a;
-      --panel-alt: #141720;
-      --grid: #2a2d38;
-      --text: #e8ecf1;
-      --muted: #a9b1bb;
+      --bg: #ffffff;
+      --panel: #ffffff; /* brighter panel for white background */
+      --panel-alt: #f5f7fb; /* subtle gradient end */
+      --grid: #c7cfd9; /* slightly darker for readability */
+      --text: #0b0c0f;
+      --muted: #3a4252; /* higher contrast */
       --accent: #e74a3b; /* red trace */
-      --blue: #3da5ff;
-      --orange: #ff9f1a;
-      --line: #cfd6de;
+      --blue: #1f6feb;   /* x(t) */
+      --orange: #b35a00; /* y(t) a bit darker */
+      --line: #2a2d38;
     }
     * { box-sizing: border-box; }
     body {
@@ -35,9 +35,9 @@
     }
     .card {
       background: linear-gradient(180deg, var(--panel), var(--panel-alt));
-      border: 1px solid #1b1e28;
+      border: 1px solid #d5dbe6;
       border-radius: 14px;
-      box-shadow: 0 6px 22px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03);
+      box-shadow: 0 6px 22px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
       padding: 10px 12px;
       position: relative;
       overflow: hidden;
@@ -58,7 +58,7 @@
     }
     .panel-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
     fieldset {
-      border: 1px solid #242736;
+      border: 1px solid #d5dbe6;
       border-radius: 10px;
       padding: 8px;
       margin: 0;
@@ -79,8 +79,8 @@
     .kv label { white-space: nowrap; }
     .kv input[type="number"] {
       width: 100%;
-      background: #0f1219;
-      border: 1px solid #242736;
+      background: #ffffff;
+      border: 1px solid #c8cfdb;
       border-radius: 8px;
       color: var(--text);
       padding: 6px 8px;
@@ -90,8 +90,8 @@
       width: 100%;
       appearance: none;
       height: 22px;
-      background: #0f1219;
-      border: 1px solid #242736;
+      background: #ffffff;
+      border: 1px solid #c8cfdb;
       border-radius: 8px;
       padding: 0 6px;
     }
@@ -107,11 +107,11 @@
     }
     .kv input[type="number"]::-webkit-outer-spin-button,
     .kv input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-    .kv input[type="number"] { -moz-appearance: textfield; }
+    .kv input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
 
     select, button, label.chk {
-      background: #0f1219;
-      border: 1px solid #242736;
+      background: #ffffff;
+      border: 1px solid #c8cfdb;
       border-radius: 10px;
       color: var(--text);
       padding: 8px 10px;
@@ -121,12 +121,26 @@
     .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     /* smaller buttons height as requested */
     .btns button { padding: 6px 8px; font-size: 11px; line-height: 1.1; }
-    button:hover { border-color: #2e3448; filter: brightness(1.02); }
+    button:hover { border-color: #9aa7bd; filter: brightness(0.98); }
     .hint { font-size: 12px; color: var(--muted); }
     select { width: 100%; }
     .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    button:hover { border-color: #2e3448; filter: brightness(1.02); }
+    button:hover { border-color: #9aa7bd; filter: brightness(0.98); }
     .hint { font-size: 12px; color: var(--muted); }
+
+    /* Info card styling */
+    .info { display: grid; grid-template-columns: auto 1fr; row-gap: 6px; column-gap: 10px; padding-top: 22px; }
+    .badge { display:inline-block; padding:2px 8px; border-radius: 999px; font-size:11px; color:#fff; }
+    .badge-x { background: var(--blue); }
+    .badge-y { background: var(--orange); }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    /* Larger, more legible parameter display in the lower-right info card */
+    #infoCard .info { row-gap: 10px; column-gap: 12px; }
+    #infoCard .badge { padding: 4px 10px; font-size: 12px; }
+    #infoCard .mono { font-size: 16px; line-height: 1.7; }
+    #infoCard .mono span { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; }
+    /* Badge cell spans two rows for separate ω/φ lines */
+    #infoCard .info .badge-cell { grid-row: span 2; align-self: start; padding-top: 2px; }
   </style>
 </head>
 <body>
@@ -143,6 +157,18 @@
     <div class="card" id="xtCard" style="grid-column: 1 / span 1; grid-row: 2 / span 1;">
       <div class="title">X input x(t) — 時間は下向き（+）</div>
       <canvas id="xt"></canvas>
+    </div>
+
+    <div class="card" id="infoCard" style="grid-column: 2 / span 1; grid-row: 2 / span 1;">
+      <div class="title">現在の角振動数と位相</div>
+      <div class="info">
+        <div class="badge-cell"><span class="badge badge-x">X</span></div>
+        <div class="mono">ωx = <span id="wxVal">0.0</span> rad/s</div>
+        <div class="mono">φx = <span id="phxVal">0.0</span> rad</div>
+        <div class="badge-cell"><span class="badge badge-y">Y</span></div>
+        <div class="mono">ωy = <span id="wyVal">0.0</span> rad/s</div>
+        <div class="mono">φy = <span id="phyVal">0.0</span> rad</div>
+      </div>
     </div>
 
     <div class="card controls" style="grid-column: 3 / span 1; grid-row: 1 / span 2;">
@@ -193,6 +219,9 @@
         </label>
         <label class="chk" style="display:inline-flex;align-items:center;gap:8px;padding:8px 10px;">
           <input id="fullcurve" type="checkbox" checked style="transform:scale(1.2); margin-right:6px;"> full curve
+        </label>
+        <label class="chk" style="display:inline-flex;align-items:center;gap:8px;padding:8px 10px;">
+          <input id="axes" type="checkbox" checked style="transform:scale(1.2); margin-right:6px;"> axes
         </label>
       </div>
 
@@ -403,6 +432,7 @@
       const wh = document.getElementById('winHint'); if (wh) wh.textContent = String(state.WIN);
       resetHist();
       recomputeFullCurve();
+      updateInfoPanel();
     }
 
     ['kindX','kindY'].forEach(id => {
@@ -410,7 +440,17 @@
     });
 
     el('pause').addEventListener('click', ()=> state.running = !state.running );
-    el('reset').addEventListener('click', ()=> { resetHist(); recomputeFullCurve(); });
+    el('reset').addEventListener('click', ()=> { resetHist(); recomputeFullCurve(); updateInfoPanel(); });
+
+    // --- Info panel updater ---
+    function updateInfoPanel() {
+      const setText = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+      const fmt = (v) => (Math.abs(v) < 1e-6 ? '0.000' : v.toFixed(3));
+      setText('wxVal', fmt(state.wx));
+      setText('wyVal', fmt(state.wy));
+      setText('phxVal', fmt(state.phx));
+      setText('phyVal', fmt(state.phy));
+    }
 
     // --- Drawing helpers ---
     function drawGrid(ctx, x0, y0, x1, y1, xTicks=6, yTicks=6) {
@@ -521,6 +561,16 @@
         const map = makeMapperXY(xy);
         ctx.clearRect(0,0,map.w,map.h);
         drawGrid(ctx, 10, 10, map.w-10, map.h-10, 6, 6);
+        // axes (X=0, Y=0)
+        if (el('axes') && el('axes').checked) {
+          ctx.save();
+          ctx.strokeStyle = '#2a2d38';
+          ctx.lineWidth = 1.0;
+          const AX = map.sx(0), AY = map.sy(0);
+          ctx.beginPath(); ctx.moveTo(14, AY); ctx.lineTo(map.w-14, AY); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(AX, 14); ctx.lineTo(AX, map.h-14); ctx.stroke();
+          ctx.restore();
+        }
 
         // full curve (gray, possibly multi segments for saw) — toggleable
         if (el('fullcurve') && el('fullcurve').checked) {
@@ -586,6 +636,15 @@
         const map = makeMapperXT(xt);
         ctx.clearRect(0,0,map.w,map.h);
         drawGrid(ctx, 10, 10, map.w-10, map.h-10, 6, 6);
+        // axis (x=0)
+        if (el('axes') && el('axes').checked) {
+          ctx.save();
+          ctx.strokeStyle = '#2a2d38';
+          ctx.lineWidth = 1.0;
+          const AX0 = map.sx(0);
+          ctx.beginPath(); ctx.moveTo(AX0, 14); ctx.lineTo(AX0, map.h-14); ctx.stroke();
+          ctx.restore();
+        }
 
         const xs=[], ts=[];
         for (let i=0;i<tWin.length;i++) {
@@ -631,6 +690,15 @@
         const map = makeMapperYT(yt);
         ctx.clearRect(0,0,map.w,map.h);
         drawGrid(ctx, 10, 10, map.w-10, map.h-10, 6, 6);
+        // axis (y=0)
+        if (el('axes') && el('axes').checked) {
+          ctx.save();
+          ctx.strokeStyle = '#2a2d38';
+          ctx.lineWidth = 1.0;
+          const AY0 = map.sy(0);
+          ctx.beginPath(); ctx.moveTo(14, AY0); ctx.lineTo(map.w-14, AY0); ctx.stroke();
+          ctx.restore();
+        }
 
         const ys=[], ts=[];
         for (let i=0;i<tWin.length;i++) {
