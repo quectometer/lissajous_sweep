@@ -1,751 +1,492 @@
 <!doctype html>
-<html lang="ja">
+<html lang="ja" data-theme="light">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Lissajous / Sweep Oscilloscope (Browser) — with Sliders</title>
-  <style>
-    :root {
-      --bg: #ffffff;
-      --panel: #ffffff; /* brighter panel for white background */
-      --panel-alt: #f5f7fb; /* subtle gradient end */
-      --grid: #c7cfd9; /* slightly darker for readability */
-      --text: #0b0c0f;
-      --muted: #3a4252; /* higher contrast */
-      --accent: #e74a3b; /* red trace */
-      --blue: #1f6feb;   /* x(t) */
-      --orange: #b35a00; /* y(t) a bit darker */
-      --line: #2a2d38;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; padding: 16px;
-      background: var(--bg);
-      color: var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    }
-    h1 { font-size: 18px; margin: 0 0 8px 0; font-weight: 600; }
-    .app {
-      display: grid;
-      grid-template-columns: 4fr 1.6fr 2.2fr;
-      grid-template-rows: 4fr 1.9fr;
-      gap: 14px 18px;
-      height: 86vh;
-      min-height: 640px;
-    }
-    .card {
-      background: linear-gradient(180deg, var(--panel), var(--panel-alt));
-      border: 1px solid #d5dbe6;
-      border-radius: 14px;
-      box-shadow: 0 6px 22px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6);
-      padding: 10px 12px;
-      position: relative;
-      overflow: hidden;
-    }
-    .title {
-      position: absolute;
-      left: 12px; top: 10px;
-      font-size: 13px; color: var(--muted);
-      letter-spacing: 0.2px;
-    }
-    canvas { width: 100%; height: 100%; display: block; }
-
-    /* Controls */
-    .controls {
-      display: grid;
-      grid-template-rows: auto auto auto 1fr;
-      gap: 10px;
-    }
-    .panel-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-    fieldset {
-      border: 1px solid #d5dbe6;
-      border-radius: 10px;
-      padding: 8px;
-      margin: 0;
-      min-inline-size: auto;
-    }
-    fieldset legend {
-      padding: 0 6px;
-      color: var(--muted);
-      font-size: 12px;
-    }
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-
-    /* Parameters: vertical single column for longer sliders */
-    .params { display: grid; grid-template-columns: 1fr; gap: 10px; }
-
-    /* Key-value rows now support a number + slider pair */
-    .kv { display: grid; grid-template-columns: 76px 90px 1fr; align-items: center; gap: 8px; }
-    .kv label { white-space: nowrap; }
-    .kv input[type="number"] {
-      width: 100%;
-      background: #ffffff;
-      border: 1px solid #c8cfdb;
-      border-radius: 8px;
-      color: var(--text);
-      padding: 6px 8px;
-      font-size: 12px;
-    }
-    .kv input[type="range"] {
-      width: 100%;
-      appearance: none;
-      height: 22px;
-      background: #ffffff;
-      border: 1px solid #c8cfdb;
-      border-radius: 8px;
-      padding: 0 6px;
-    }
-    .kv input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 14px; height: 14px; border-radius: 50%;
-      background: #cfd6de; border: none;
-      box-shadow: 0 0 0 2px #0f1219;
-    }
-    .kv input[type="range"]::-moz-range-thumb {
-      width: 14px; height: 14px; border-radius: 50%;
-      background: #cfd6de; border: none;
-    }
-    .kv input[type="number"]::-webkit-outer-spin-button,
-    .kv input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-    .kv input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
-
-    select, button, label.chk {
-      background: #ffffff;
-      border: 1px solid #c8cfdb;
-      border-radius: 10px;
-      color: var(--text);
-      padding: 8px 10px;
-      font-size: 12px;
-    }
-    select { width: 100%; }
-    .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    /* smaller buttons height as requested */
-    .btns button { padding: 6px 8px; font-size: 11px; line-height: 1.1; }
-    button:hover { border-color: #9aa7bd; filter: brightness(0.98); }
-    .hint { font-size: 12px; color: var(--muted); }
-    select { width: 100%; }
-    .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    button:hover { border-color: #9aa7bd; filter: brightness(0.98); }
-    .hint { font-size: 12px; color: var(--muted); }
-
-    /* Info card styling */
-    .info { display: grid; grid-template-columns: auto 1fr; row-gap: 6px; column-gap: 10px; padding-top: 22px; }
-    .badge { display:inline-block; padding:2px 8px; border-radius: 999px; font-size:11px; color:#fff; }
-    .badge-x { background: var(--blue); }
-    .badge-y { background: var(--orange); }
-    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
-    /* Larger, more legible parameter display in the lower-right info card */
-    #infoCard .info { row-gap: 10px; column-gap: 12px; }
-    #infoCard .badge { padding: 4px 10px; font-size: 12px; }
-    #infoCard .mono { font-size: 16px; line-height: 1.7; }
-    #infoCard .mono span { font-size: 22px; font-weight: 700; letter-spacing: 0.2px; }
-    /* Badge cell spans two rows for separate ω/φ lines */
-    #infoCard .info .badge-cell { grid-row: span 2; align-self: start; padding-top: 2px; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="リサジュー図形と鋸歯状波による掃引を、XY・XT・YTの対応から学ぶシミュレーター。オフラインで利用できます。">
+<title>リサジュー・スコープ | 波形と掃引の実験室</title>
+<style>
+:root{color-scheme:light;--bg:#f0f3f6;--surface:#fff;--subtle:#f7f9fb;--text:#172638;--muted:#586b7d;--line:#d8e1e9;--grid:#e3e9ee;--axis:#8395a5;--accent:#245ce2;--accent-soft:#eaf0ff;--trace:#d84c42;--x:#1767c0;--y:#a65e04;--ref:#aab6c1;--plot:#fff;--shadow:0 3px 18px #18364a08}
+:root[data-theme=dark]{color-scheme:dark;--bg:#0d1621;--surface:#142130;--subtle:#192939;--text:#e8eff7;--muted:#acbdcc;--line:#304356;--grid:#283b4d;--axis:#71879c;--accent:#8bb4ff;--accent-soft:#213b60;--trace:#ff897c;--x:#78b8ff;--y:#ffc16c;--ref:#63788b;--plot:#111e2c;--shadow:0 3px 18px #0002}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:"Yu Gothic UI","Hiragino Kaku Gothic ProN",Meiryo,system-ui,sans-serif;line-height:1.55}button,input,select{font:inherit;color:inherit}button,select,input[type=number]{border:1px solid var(--line);background:var(--surface);border-radius:9px;min-height:44px}button{cursor:pointer;padding:8px 13px;font-weight:650;touch-action:manipulation}button:hover:not(:disabled){background:var(--accent-soft);border-color:var(--accent)}button:disabled{opacity:.45;cursor:default}button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}select{padding:8px 29px 8px 11px;max-width:100%}input[type=checkbox]{width:19px;height:19px;accent-color:var(--accent);flex:none}input[type=number]{width:100%;padding:5px 8px;font-size:16px;font-variant-numeric:tabular-nums;text-align:center;appearance:textfield;-moz-appearance:textfield}input::-webkit-inner-spin-button,input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}h1,h2,h3,p{margin:0}h2{font-size:17px}small,.hint{font-size:12px;color:var(--muted)}.mono{font-variant-numeric:tabular-nums;font-family:Consolas,"SFMono-Regular",monospace}.shell{max-width:1460px;margin:0 auto;padding:24px 26px 32px}.masthead{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:22px}.brand{display:flex;align-items:center;gap:13px}.brand-icon{width:45px;height:45px;color:var(--accent);background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:9px;flex:none}.eyebrow{font-size:10px;letter-spacing:.16em;color:var(--muted);font-weight:750}h1{font-size:23px;letter-spacing:.01em;font-weight:750}.top-options{display:flex;gap:10px}.top-options label{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}.top-options select{font-size:13px;min-height:40px}.workspace{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:18px;align-items:start}.panel{background:var(--surface);border:1px solid var(--line);border-radius:17px;box-shadow:var(--shadow);overflow:hidden}.stage{min-width:0}.stage-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:19px 22px 12px}.stage-heading h2{font-size:16px}.kicker{font-size:11px;color:var(--muted);letter-spacing:.05em}.live-pill{display:inline-flex;gap:7px;align-items:center;white-space:nowrap;font-size:12px;color:var(--muted);background:var(--subtle);padding:5px 10px;border-radius:30px}.status-dot{width:7px;height:7px;border-radius:50%;background:var(--axis)}body.is-running .status-dot{background:var(--trace)}.canvas-wrap{margin:0 14px;position:relative}canvas{display:block;width:100%;height:auto}.transport{display:flex;align-items:center;gap:8px;padding:13px 20px;border-top:1px solid var(--line);background:var(--subtle);flex-wrap:wrap}.primary{background:var(--accent);border-color:var(--accent);color:#fff;min-width:118px}:root[data-theme=dark] .primary{color:#0b1b30}.primary:hover:not(:disabled){background:var(--accent);filter:brightness(.94)}.transport .time{margin-left:auto;font-size:14px;white-space:nowrap}.progress-track{height:3px;background:var(--line)}.progress-track i{display:block;width:0;height:100%;background:var(--trace)}.trace-description{padding:10px 20px 12px;font-size:12px;color:var(--muted);min-height:40px}.legend{display:flex;gap:18px;flex-wrap:wrap;padding:0 22px 15px;color:var(--muted);font-size:12px}.legend span{display:inline-flex;align-items:center;gap:6px}.legend i{width:20px;height:3px;background:var(--trace);display:inline-block;border-radius:3px}.legend .ref-line{background:var(--ref);height:2px}.legend .point-key{width:10px;height:10px;border-radius:50%;background:var(--surface);border:2px solid var(--trace)}.readout{margin-top:15px;display:grid;grid-template-columns:1fr 1fr;gap:12px}.channel-readout{padding:14px 17px;border:1px solid var(--line);border-radius:12px;background:var(--surface);min-width:0}.channel-readout h3{font-size:13px;margin-bottom:5px;display:flex;align-items:center;gap:7px}.channel-readout p{font-size:12px;line-height:1.8;overflow-wrap:anywhere}.channel-readout .equation{font-size:13px;font-weight:650}.x-color{color:var(--x)}.y-color{color:var(--y)}.channel-dot{width:7px;height:7px;background:currentColor;border-radius:50%}.caption{font-size:12px;color:var(--muted);padding:12px 3px 0}.tool-links{display:flex;gap:9px;margin-top:12px;flex-wrap:wrap}.tool-links button{font-size:12px;min-height:38px;padding:6px 11px}.settings{padding:18px}.settings-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}.settings-header .quiet{font-size:11px;padding:5px 8px;min-height:36px;color:var(--muted)}.field-label{display:block;font-size:12px;font-weight:650;margin-bottom:5px}.full-width{width:100%}.setting-section{margin-top:18px;border-top:1px solid var(--line);padding-top:15px}.setting-section h3{font-size:12px;color:var(--muted);letter-spacing:.04em;margin-bottom:9px}.segmented{display:flex;padding:3px;background:var(--subtle);border:1px solid var(--line);border-radius:10px;gap:3px}.segmented button{flex:1;font-size:12px;padding:6px 5px;min-height:38px;background:transparent;border-color:transparent}.segmented button[aria-pressed=true]{background:var(--surface);border-color:var(--line);color:var(--accent)}.channel-settings{border:0;border-top:1px solid var(--line);padding:12px 0 0;margin:16px 0 0;min-width:0}.channel-settings legend{font-size:13px;font-weight:750;padding:0 8px 0 0}.channel-settings select{font-size:13px}.param{margin-top:11px}.param-label{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:5px;font-size:12px}.param-label label{font-weight:650}.param-unit{font-size:10px;color:var(--muted)}.number-control{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;gap:6px}.stepper{padding:0;font-size:12px}.param input[type=range]{width:100%;height:30px;display:block;margin:3px 0 0;background:transparent;accent-color:var(--accent);cursor:pointer;touch-action:pan-y}.param input[type=range]::-webkit-slider-thumb{min-height:19px;min-width:19px}.param input[type=range]:focus-visible{border-radius:10px}.frequency-note{display:block;font-size:11px;color:var(--muted);min-height:17px}.checks{display:grid;grid-template-columns:1fr 1fr;gap:4px 7px;margin-top:12px}.checks label{display:flex;align-items:center;gap:6px;min-height:44px;font-size:12px;cursor:pointer}.mode-note{font-size:11px;line-height:1.7;margin-top:6px;color:var(--muted)}.start-from-settings{display:none;width:100%;margin-top:18px}.mobile-tabs{display:none}.help{margin-top:18px;border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px 16px}.help summary{font-size:13px;font-weight:650;cursor:pointer;min-height:25px}.help-body{font-size:12px;color:var(--muted);padding:12px 0 3px;line-height:1.9}.help-body p+p{margin-top:8px}.help-body ul{padding-left:20px}.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);padding:11px 18px;background:var(--text);color:var(--surface);font-size:13px;max-width:90vw;border-radius:10px;z-index:10;box-shadow:var(--shadow)}.toast:empty{display:none}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.footer{font-size:11px;color:var(--muted);margin-top:20px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.compact .workspace{display:block;max-width:940px;margin:0 auto}.compact .mobile-tabs{display:flex;max-width:940px;margin:0 auto 14px;background:var(--surface);padding:4px;border:1px solid var(--line);border-radius:12px;gap:5px;position:sticky;top:8px;z-index:3}.mobile-tabs button{flex:1;border-color:transparent;background:transparent;font-size:13px;min-height:43px}.mobile-tabs button[aria-selected=true]{color:var(--accent);background:var(--accent-soft)}.compact[data-screen=run] #settingsPanel{display:none}.compact[data-screen=settings] #runPanel{display:none}.compact .settings{max-width:700px;margin:auto;padding:20px}.compact .start-from-settings{display:block}.compact .channel-settings{display:grid;grid-template-columns:1fr 1fr;column-gap:24px}.compact .channel-settings .wave-choice{grid-column:1/-1}.compact .channel-settings .param:last-child{grid-column:1/-1}.compact .channel-settings .param:last-child input[type=range]{max-width:100%}body.wide .workspace{grid-template-columns:minmax(440px,1fr) 350px}body.wide .shell{min-width:880px}
+@media(min-width:1001px){body:not(.compact) .canvas-wrap{width:calc(100% - 28px);max-width:max(440px,calc(100dvh - 350px));margin:0 auto}.settings{max-height:calc(100dvh - 35px);overflow-y:auto;position:sticky;top:16px;scrollbar-width:thin}}
+@media(max-width:900px){.shell{padding:17px 18px 24px}.masthead{margin-bottom:16px}.top-options label{display:block}.top-options select{display:block;margin-top:2px}.eyebrow{font-size:9px}h1{font-size:21px}}
+@media(max-width:560px){.shell{padding:12px 9px 24px}.masthead{display:block;margin-bottom:12px}.brand{gap:10px}.brand-icon{width:39px;height:39px;padding:7px;border-radius:11px}h1{font-size:21px}.top-options{margin-top:12px;gap:10px;justify-content:flex-end}.top-options label{display:flex;gap:6px;align-items:center;font-size:11px}.top-options select{margin:0;font-size:12px;min-height:38px}.stage-heading{padding:14px 13px 8px;gap:5px}.stage-heading h2{font-size:14px}.kicker{font-size:9px}.live-pill{font-size:10px;padding:4px 7px}.canvas-wrap{margin:0 4px}.legend{padding:1px 13px 12px;gap:12px;font-size:10px}.transport{padding:11px 12px;gap:6px}.transport button{font-size:12px;padding:8px 9px}.primary{min-width:100px}.transport .time{font-size:12px}.readout{gap:8px;margin-top:10px}.channel-readout{padding:10px 11px}.channel-readout p{font-size:11px}.channel-readout .equation{font-size:12px}.trace-description{padding:9px 12px;font-size:11px}.compact .settings{padding:17px}.compact .channel-settings{display:block}.param{margin-top:14px}.number-control{grid-template-columns:55px minmax(0,1fr) 55px}.param input[type=range]{height:36px}.caption{font-size:11px;padding:9px 3px 0}.footer{font-size:10px}.help{margin-top:12px}.compact .mobile-tabs{top:5px;margin-bottom:10px}.settings{max-height:none;position:static}.toast{bottom:16px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+@media(max-width:560px){.top-options label{flex:1;min-width:0;white-space:nowrap}.top-options select{width:100%;min-width:0;max-width:150px}}
+@media print{body{background:#fff}.shell{padding:0}.settings,.top-options,.mobile-tabs,.transport,.tool-links,.help,.footer{display:none!important}.workspace{display:block!important}.stage{display:block!important}.panel{box-shadow:none}}
+</style>
 </head>
-<body>
-  <h1>Lissajous / Sweep Oscilloscope</h1>
-  <div class="app">
-    <div class="card" id="xyCard" style="grid-column: 1 / span 1; grid-row: 1 / span 1;">
-      <div class="title">Lissajous / Sweep（灰: 全体, 赤: トレース）</div>
-      <canvas id="xy"></canvas>
-    </div>
-    <div class="card" id="ytCard" style="grid-column: 2 / span 1; grid-row: 1 / span 1;">
-      <div class="title">Y input y(t) — 時間は右向き（+）</div>
-      <canvas id="yt"></canvas>
-    </div>
-    <div class="card" id="xtCard" style="grid-column: 1 / span 1; grid-row: 2 / span 1;">
-      <div class="title">X input x(t) — 時間は下向き（+）</div>
-      <canvas id="xt"></canvas>
-    </div>
-
-    <div class="card" id="infoCard" style="grid-column: 2 / span 1; grid-row: 2 / span 1;">
-      <div class="title">現在の角振動数と位相</div>
-      <div class="info">
-        <div class="badge-cell"><span class="badge badge-x">X</span></div>
-        <div class="mono">ωx = <span id="wxVal">0.0</span> rad/s</div>
-        <div class="mono">φx = <span id="phxVal">0.0</span> rad</div>
-        <div class="badge-cell"><span class="badge badge-y">Y</span></div>
-        <div class="mono">ωy = <span id="wyVal">0.0</span> rad/s</div>
-        <div class="mono">φy = <span id="phyVal">0.0</span> rad</div>
+<body data-screen="run">
+<main class="shell">
+  <header class="masthead">
+    <div class="brand"><svg class="brand-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M2 16C8-5 24 37 30 16S8 37 2 16 24-5 30 16" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><div><div class="eyebrow">WAVEFORM LAB · PHYSICS</div><h1>リサジュー・スコープ</h1></div></div>
+    <div class="top-options"><label for="theme">配色<select id="theme"><option value="light">ライト</option><option value="dark">ダーク</option><option value="auto">端末に合わせる</option></select></label><label for="layout">画面<select id="layout"><option value="auto">自動</option><option value="compact">小画面モード</option><option value="wide">並べて表示</option></select></label></div>
+  </header>
+  <nav class="mobile-tabs" role="tablist" aria-label="画面切り替え"><button id="runTab" role="tab" aria-selected="true" aria-controls="runPanel" tabindex="0">01　実行・観察</button><button id="settingsTab" role="tab" aria-selected="false" aria-controls="settingsPanel" tabindex="-1">02　条件設定</button></nav>
+  <div class="workspace">
+    <section id="runPanel" class="stage" aria-label="実行・観察">
+      <div class="panel">
+        <div class="stage-heading"><div><div class="kicker">2つの入力から、1つの軌跡へ</div><h2>合成と入力の対応</h2></div><span class="live-pill"><i class="status-dot" aria-hidden="true"></i><span id="runStatus">準備完了</span></span></div>
+        <div class="canvas-wrap"><canvas id="scope" role="img" aria-label="左上にXY合成図、左下にX入力と時間の図、右上に時間とY入力の図。点線は同時刻の値を結びます。"></canvas></div>
+        <div class="legend"><span><i></i>描いた軌跡</span><span><i class="ref-line"></i>全体の参考線</span><span><i class="point-key"></i>現在の点</span></div>
+        <div class="transport"><button id="play" class="primary">▶ 再生</button><button id="step" title="シミュレーション時刻を0.1秒進めます">＋0.1秒</button><button id="reset">最初から</button><span class="time mono" id="timeReadout">t = 0.000 s</span></div>
+        <div class="progress-track" role="progressbar" aria-label="一周の進行度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress"><i id="progressFill"></i></div>
+        <p id="traceDescription" class="trace-description"></p>
       </div>
-    </div>
-
-    <div class="card controls" style="grid-column: 3 / span 1; grid-row: 1 / span 2;">
-      <div class="panel-title">Controls</div>
-
-      <fieldset>
-        <legend>Waveform</legend>
-        <div class="row">
-          <div class="kv" style="grid-template-columns: 100px 1fr;">
-            <label for="kindX">X waveform</label>
-            <select id="kindX">
-              <option value="sin">sin</option>
-              <option value="saw">saw</option>
-            </select>
-          </div>
-          <div class="kv" style="grid-template-columns: 100px 1fr;">
-            <label for="kindY">Y waveform</label>
-            <select id="kindY">
-              <option value="sin">sin</option>
-              <option value="saw">saw</option>
-            </select>
-          </div>
-        </div>
-      </fieldset>
-
-      <fieldset>
-        <legend>Parameters</legend>
-        <div class="params">
-          <div class="kv"><label>Ax</label><input id="Ax" type="number" step="0.1" min="0" max="5" value="1.0"><input id="Ax_s" type="range" step="0.1" min="0.1" max="5" value="1.0"></div>
-          <div class="kv"><label>Ay</label><input id="Ay" type="number" step="0.1" min="0" max="5" value="1.0"><input id="Ay_s" type="range" step="0.1" min="0.1" max="5" value="1.0"></div>
-          <div class="kv"><label>ωx</label><input id="wx" type="number" step="0.1" min="0" value="3.0"><input id="wx_s" type="range" step="0.1" min="0" max="20" value="3.0"></div>
-          <div class="kv"><label>ωy</label><input id="wy" type="number" step="0.1" min="0" value="2.0"><input id="wy_s" type="range" step="0.1" min="0" max="20" value="2.0"></div>
-          <div class="kv"><label>φx</label><input id="phx" type="number" step="0.1" min="0" max="6.283185307179586" value="0.0"><input id="phx_s" type="range" step="0.1" min="0" max="6.283185307179586" value="0.0"></div>
-          <div class="kv"><label>φy</label><input id="phy" type="number" step="0.1" min="0" max="6.283185307179586" value="0.0"><input id="phy_s" type="range" step="0.1" min="0" max="6.283185307179586" value="0.0"></div>
-          <div class="kv"><label>speed</label><input id="speed" type="number" step="0.1" min="0.1" max="5.0" value="1.0"><input id="speed_s" type="range" step="0.1" min="0.1" max="5.0" value="1.0"></div>
-          <div class="kv"><label>window(s)</label><input id="win" type="number" step="0.1" min="1" max="60" value="16"><input id="win_s" type="range" step="0.1" min="1" max="60" value="16"></div>
-        </div>
-      </fieldset>
-
-      <div class="btns">
-        <button id="pause">Pause/Play</button>
-        <button id="reset">Reset</button>
-      </div>
-
-      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-        <label class="chk" style="display:inline-flex;align-items:center;gap:8px;padding:8px 10px;">
-          <input id="guides" type="checkbox" checked style="transform:scale(1.2); margin-right:6px;"> guides
-        </label>
-        <label class="chk" style="display:inline-flex;align-items:center;gap:8px;padding:8px 10px;">
-          <input id="fullcurve" type="checkbox" checked style="transform:scale(1.2); margin-right:6px;"> full curve
-        </label>
-        <label class="chk" style="display:inline-flex;align-items:center;gap:8px;padding:8px 10px;">
-          <input id="axes" type="checkbox" checked style="transform:scale(1.2); margin-right:6px;"> axes
-        </label>
-      </div>
-
-      <div class=\"hint\">Tips: 数値は直接入力もスライドも可能です。描写速度が高すぎると見かけ上のエイリアシングが発生します。</div>
-    </div>
+      <div class="readout" aria-label="現在のシミュレーション条件"><article class="channel-readout"><h3 class="x-color"><i class="channel-dot" aria-hidden="true"></i>X 入力 <span id="xKindText"></span></h3><p class="equation mono" id="xEquation"></p><p id="xParameters" class="mono"></p><p id="xValue" class="mono"></p></article><article class="channel-readout"><h3 class="y-color"><i class="channel-dot" aria-hidden="true"></i>Y 入力 <span id="yKindText"></span></h3><p class="equation mono" id="yEquation"></p><p id="yParameters" class="mono"></p><p id="yValue" class="mono"></p></article></div>
+      <p class="caption">X は下の図と横軸を、Y は右の図と縦軸を共有。点線をたどると、同じ時刻の入力が XY の1点になります。</p>
+      <div class="tool-links"><button id="saveImage">図をPNGで保存</button><button id="fitPeriod">時間幅を一周に合わせる</button></div>
+      <details class="help"><summary>見方と操作のヒント</summary><div class="help-body"><p><strong>正弦波</strong>：x(t) = Aₓ sin(ωₓt + φₓ)、y(t) = Aᵧ sin(ωᵧt + φᵧ)。振動数 f = ω / 2π です。X と Y を同じ振動数にして位相差を変えると、直線・楕円・円の違いを観察できます。</p><p><strong>鋸歯状波</strong>：一定速度で増加し、+A から −A へ戻ります。X を鋸歯状波にすると、横方向の掃引と Y 入力の関係が見えます。戻る瞬間の線は描きません。</p><p><strong>一周</strong>：動く2入力の位相が初めて同時に戻る共通周期 T です。振動数比 fₓ : fᵧ = p : q（既約）のとき T = p/fₓ = q/fᵧ。一周モードでは T で停止し、結果を残します。p, q がともに64以下で一致する比を判定します。近い比を無理に閉曲線とは扱いません。</p><p><strong>操作</strong>：数値は入力後に Enter または欄の外を押すと確定します。±0.1 は表示中の単位で増減します。波形・振幅・振動数・位相を変えると t = 0 へ戻ります。速度・時間幅・配色の変更では時刻を維持します。設定画面に移ると一時停止します。</p><p><strong>時間軸</strong>：X 入力では下向き、Y 入力では右向きに時間が進みます。両方とも同じ時間範囲で、目盛りは開始からの秒数です。スペースキーで再生／停止（入力欄の操作中を除く）。別タブに移った間はシミュレーション時間を進めません。</p></div></details>
+    </section>
+    <section id="settingsPanel" class="panel settings" aria-label="条件設定">
+      <div class="settings-header"><h2>条件設定</h2><button class="quiet" id="defaults">初期条件へ</button></div>
+      <label class="field-label" for="preset">実験プリセット</label><select id="preset" class="full-width"><option value="threeTwo">リサジュー　3 : 2</option><option value="circle">円　1 : 1 ／ 位相差 π/2</option><option value="line">直線　1 : 1 ／ 同位相</option><option value="twoOne">リサジュー　2 : 1</option><option value="sweep">鋸歯状波の掃引　1 : 3</option><option value="custom" disabled>カスタム条件</option></select>
+      <div class="setting-section"><h3>振動数の入力単位</h3><div class="segmented" role="group" aria-label="振動数の入力単位"><button id="unitOmega" aria-pressed="true">角振動数 ω · rad/s</button><button id="unitHz" aria-pressed="false">振動数 f · Hz</button></div><p class="mode-note">ω = 2πf · 単位を切り替えても波形は変わりません。</p></div>
+      <fieldset class="channel-settings"><legend class="x-color">X 入力 · 横方向</legend><div class="wave-choice"><label class="sr-only" for="kindX">Xの波形</label><select id="kindX" class="full-width"><option value="sin">正弦波 sin</option><option value="saw">鋸歯状波 saw</option></select></div><div id="xControls" class="param-host" style="display:contents"></div></fieldset>
+      <fieldset class="channel-settings"><legend class="y-color">Y 入力 · 縦方向</legend><div class="wave-choice"><label class="sr-only" for="kindY">Yの波形</label><select id="kindY" class="full-width"><option value="sin">正弦波 sin</option><option value="saw">鋸歯状波 saw</option></select></div><div id="yControls" class="param-host" style="display:contents"></div></fieldset>
+      <div class="setting-section"><h3>時間と描画</h3><div id="timeControls"></div><label class="field-label" for="traceMode" style="margin-top:13px">軌跡の表示</label><select id="traceMode" class="full-width"><option value="continuous">連続 · 開始から蓄積</option><option value="window">連続 · 直近の時間窓</option><option value="cycle">一周だけ描いて停止</option></select><p id="cycleNote" class="mode-note"></p><div class="checks"><label><input id="showMarker" type="checkbox" checked>XY の現在点</label><label><input id="showGuides" type="checkbox" checked>対応の点線</label><label><input id="showReference" type="checkbox" checked>全体の参考線</label><label><input id="showGrid" type="checkbox" checked>目盛りとグリッド</label></div></div>
+      <button class="primary start-from-settings" id="applyRun">実行画面で再生 ▶</button>
+    </section>
   </div>
+  <footer class="footer"><span>リサジュー・スコープ v5 · オフライン対応</span><span>振幅は任意単位 / 位相は rad</span></footer>
+</main>
+<div id="announcement" class="toast" role="status" aria-live="polite"></div>
+<noscript>このシミュレーターを利用するには、ブラウザーでJavaScriptを有効にしてください。</noscript>
+<script>
+'use strict';
+// Pure, dependency-free signal and sampling functions shared by the viewer and tests.
+const ScopeMath = (() => {
+  const TAU = 2 * Math.PI;
+  const MAX_RATIO = 64;
+  const PHASE_TOLERANCE = 1e-10;
+  const EPS = Number.EPSILON;
 
-  <script>
-    // --- Utilities ---
-    const TWO_PI = Math.PI * 2;
-    const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  function valid(c) {
+    return c && Number.isFinite(c.amp) && c.amp >= 0 &&
+      Number.isFinite(c.omega) && c.omega >= 0 && Number.isFinite(c.phase) &&
+      (c.kind === 'sin' || c.kind === 'saw');
+  }
+  function moving(c) { return c.amp > 0 && c.omega > 0; }
+  function turns(c, t) { return (c.omega * t + c.phase) / TAU; }
+  function sawBranch(c, t) {
+    const value = turns(c, t) + 0.5;
+    const nearest = Math.round(value);
+    // Stabilize an analytically exact reset against floating-point rounding.
+    return Math.floor(Math.abs(value - nearest) <= 4 * EPS * Math.max(1, Math.abs(value)) ? nearest : value);
+  }
+  function wave(c, t) {
+    if (!valid(c) || !Number.isFinite(t)) return NaN;
+    if (c.amp === 0) return 0;
+    const angle = c.omega * t + c.phase;
+    if (c.kind === 'sin') return c.amp * Math.sin(angle);
+    return c.amp * Math.max(-1, Math.min(1, 2 * (angle / TAU - sawBranch(c, t))));
+  }
+  function gcd(a, b) { while (b) { const next = a % b; a = b; b = next; } return a; }
+  function cycleInfo(x, y) {
+    if (!valid(x) || !valid(y)) return {closed:false, period:null, p:null, q:null, reason:'入力値が無効です。'};
+    const mx = moving(x), my = moving(y);
+    if (!mx && !my) return {closed:true, period:null, p:null, q:null, reason:'両入力が一定値です。固有の共通周期はありません。'};
+    if (!mx || !my) return {closed:true, period:TAU / (mx ? x.omega : y.omega), p:null, q:null, reason:(mx ? 'Y' : 'X') + '入力が一定値のため、変化する入力の周期を用います。'};
+    for (let q = 1; q <= MAX_RATIO; q++) {
+      const p = Math.round(x.omega / y.omega * q);
+      if (p < 1 || p > MAX_RATIO || gcd(p, q) !== 1) continue;
+      const period = TAU * q / y.omega;
+      if (Math.abs(x.omega * period - TAU * p) <= PHASE_TOLERANCE &&
+          Math.abs(y.omega * period - TAU * q) <= PHASE_TOLERANCE) {
+        return {closed:true, period, p, q, reason:'振動数比 ' + p + ' : ' + q + ' の共通周期です。'};
+      }
+    }
+    return {closed:false, period:null, p:null, q:null, reason:'64以下の整数比では、閉じた共通周期を確認できません。'};
+  }
 
-    function saw(theta) {
-      const x = theta / TWO_PI;
-      return 2.0 * (x - Math.floor(x + 0.5));
+  function sample(x, y, start, end, maxPoints = 24000) {
+    if (!valid(x) || !valid(y) || !Number.isFinite(start) || !Number.isFinite(end) || end < start) {
+      throw new RangeError('Valid channels and finite, increasing sample times are required.');
     }
-    function wave(A, w, ph, t, kind) {
-      const arg = w * t + ph;
-      return A * (kind === 'sin' ? Math.sin(arg) : saw(arg));
-    }
-    function rationalApprox(r, maxDen=64, tol=1e-6) {
-      if (r <= 0) return [0,1];
-      let pBest = 1, qBest = 1, errBest = Math.abs(r - 1.0);
-      for (let q=1; q<=maxDen; q++) {
-        const p = Math.round(r * q);
-        if (p === 0) continue;
-        const err = Math.abs(r - p/q);
-        if (err < errBest - 1e-12) {
-          errBest = err; pBest = p; qBest = q;
-          if (errBest < tol) break;
+    if (!Number.isFinite(maxPoints) || maxPoints < (end === start ? 1 : 2)) throw new RangeError('The point limit must accommodate both endpoints.');
+    const limit = Math.floor(maxPoints);
+    const first = {t:start, x:wave(x,start), y:wave(y,start), cutX:false, cutY:false};
+    if (end === start) return [first];
+    const duration = end - start;
+    const fastest = Math.max(moving(x) ? x.omega : 0, moving(y) ? y.omega : 0);
+    const intervals = Math.max(1, Math.ceil(duration * fastest / TAU * 128));
+    const sawX = x.kind === 'saw' && moving(x), sawY = y.kind === 'saw' && moving(y);
+    const events = [];
+    let eventCount = 0;
+    for (const [c, key, enabled] of [[x,'x',sawX],[y,'y',sawY]]) {
+      if (!enabled) continue;
+      const firstIndex = sawBranch(c,start) + 1;
+      const lastIndex = sawBranch(c,end);
+      const count = Math.max(0, lastIndex - firstIndex + 1);
+      eventCount += count;
+      // Do not enumerate an unbounded number of events. The fallback below
+      // still detects every skipped reset when deciding whether to connect.
+      if (eventCount * 2 + 2 > limit) break;
+      for (let k = firstIndex; k <= lastIndex; k++) {
+        const time = (TAU * (k - 0.5) - c.phase) / c.omega;
+        if (time > start && time <= end + 8 * EPS * Math.max(1,Math.abs(end))) {
+          events.push({t:Math.min(time,end), key});
         }
       }
-      return [pBest, qBest];
+    }
+    if (eventCount * 2 + 2 > limit) {
+      const result = [first];
+      const n = Math.min(intervals, limit - 1);
+      for (let i = 1; i <= n; i++) {
+        const t = i === n ? end : start + duration * i / n;
+        const previous = result[result.length - 1];
+        result.push({t, x:wave(x,t), y:wave(y,t),
+          cutX:sawX && sawBranch(x,previous.t) !== sawBranch(x,t),
+          cutY:sawY && sawBranch(y,previous.t) !== sawBranch(y,t)});
+      }
+      return result;
     }
 
-    // --- State ---
-    const state = {
-      Ax: 1.0, Ay: 1.0, wx: 3.0, wy: 2.0, phx: 0.0, phy: 0.0,
-      kindx: 'sin', kindy: 'sin', speed: 1.0,
-      running: true, tNow: 0.0, WIN: 16.0,
-      xHist: [], yHist: [], tHist: [],
-      lastX: null, lastY: null,
-      fullXY: [], // array of stroke segments: [{x:[], y:[]}]
-      margin: 1.1,
-      maxKeep: 1000000, maxDrawXY: 12000, maxDrawTime: 3000, maxFull: 20000
-    };
-
-    // --- Canvas / Layout ---
-    const xy = document.getElementById('xy');
-    const xt = document.getElementById('xt');
-    const yt = document.getElementById('yt');
-    const canvases = [xy, xt, yt];
-
-    function resizeCanvases() {
-      for (const c of canvases) {
-        const rect = c.getBoundingClientRect();
-        c.width = Math.max(100, Math.floor(rect.width * window.devicePixelRatio));
-        c.height = Math.max(100, Math.floor(rect.height * window.devicePixelRatio));
-      }
+    events.sort((a,b) => a.t - b.t);
+    const merged = [];
+    for (const event of events) {
+      const previous = merged[merged.length - 1];
+      const tolerance = 8 * EPS * Math.max(1,Math.abs(event.t));
+      if (previous && Math.abs(previous.t - event.t) <= tolerance) previous[event.key] = true;
+      else merged.push({t:event.t, x:event.key === 'x', y:event.key === 'y'});
     }
-    window.addEventListener('resize', resizeCanvases);
-    resizeCanvases();
-
-    // --- Controls ---
-    const el = (id) => document.getElementById(id);
-
-    function syncPair(numId, rangeId) {
-      const num = el(numId), rng = el(rangeId);
-      // when number changes, update slider and recompute
-      num.addEventListener('input', () => { rng.value = num.value; onAnyParamChanged(); });
-      num.addEventListener('change', () => { rng.value = num.value; onAnyParamChanged(); });
-      // when slider moves, update number and recompute (live)
-      rng.addEventListener('input', () => { num.value = rng.value; onAnyParamChanged(); });
-      rng.addEventListener('change', () => { num.value = rng.value; onAnyParamChanged(); });
+    // Reserve two vertices for each discontinuity before choosing regular
+    // points. Thus downsampling can never discard a discontinuity marker.
+    const n = Math.min(intervals, Math.max(1, limit - 1 - 2 * merged.length));
+    const result = [first];
+    let eventIndex = 0;
+    for (let i = 1; i <= n; i++) {
+      const t = i === n ? end : start + duration * i / n;
+      while (eventIndex < merged.length && merged[eventIndex].t <= t) {
+        const event = merged[eventIndex++];
+        const actualX = wave(x,event.t), actualY = wave(y,event.t);
+        // At a reset, left and right limits share the exact event time.
+        // The non-resetting channel remains continuous through both vertices.
+        result.push({t:event.t, x:event.x ? x.amp : actualX, y:event.y ? y.amp : actualY, cutX:false, cutY:false});
+        result.push({t:event.t, x:event.x ? -x.amp : actualX, y:event.y ? -y.amp : actualY, cutX:event.x, cutY:event.y});
+      }
+      const previous = result[result.length - 1];
+      const nextEvent = merged[eventIndex];
+      // A grid vertex a few ulps before a reset could round to the right-hand
+      // value. Let the explicit event vertices represent that instant instead.
+      if (nextEvent && nextEvent.t - t <= 8 * EPS * Math.max(1,Math.abs(t))) continue;
+      if (previous.t !== t) result.push({t, x:wave(x,t), y:wave(y,t), cutX:false, cutY:false});
     }
+    return result;
+  }
+  return Object.freeze({TAU, wave, cycleInfo, sample});
+})();
 
-    function bindAllPairs() {
-      syncPair('Ax','Ax_s');
-      syncPair('Ay','Ay_s');
-      syncPair('wx','wx_s');
-      syncPair('wy','wy_s');
-      syncPair('phx','phx_s');
-      syncPair('phy','phy_s');
-      syncPair('speed','speed_s');
-      if (el('win') && el('win_s')) { syncPair('win','win_s'); }
+'use strict';
+(() => {
+  const $ = id => document.getElementById(id);
+  const {TAU, wave, cycleInfo, sample} = ScopeMath;
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  const pretty = (v, digits=3) => Math.abs(v) < 1e-10 ? '0' : Number(v.toFixed(digits)).toString();
+  const precise = v => Number(v.toPrecision(13)).toString();
+  const clone = value => JSON.parse(JSON.stringify(value));
+  const initial = {x:{amp:1,omega:3,phase:0,kind:'sin'},y:{amp:1,omega:2,phase:0,kind:'sin'},speed:1,win:16};
+  const state = {...clone(initial),unit:'omega',mode:'continuous',t:0,running:false,completed:false,screen:'run',theme:'light',layout:'auto'};
+  const canvas = $('scope'), ctx = canvas.getContext('2d');
+  // Fixed-size ink layer keeps the complete accumulated trace without an ever-growing history array.
+  const ink = document.createElement('canvas'); ink.width=ink.height=1200;
+  const inkCtx = ink.getContext('2d');
+  let geometry=null, colors={}, cycle=null, reference=[], lastTimestamp=null, frameId=null;
+  let toastTimer, lastReadout=0, range=1.12;
+  const darkPreference = matchMedia('(prefers-color-scheme: dark)');
+  const compactPreference = matchMedia('(max-width: 1000px)');
+  function notify(message) {
+    $('announcement').textContent=message; clearTimeout(toastTimer);
+    toastTimer=setTimeout(()=>{$('announcement').textContent='';},4500);
+  }
+  function savePreference(key,value){try{localStorage.setItem('lissajous-v5-'+key,value);}catch{}}
+  function readPreference(key,fallback){try{return localStorage.getItem('lissajous-v5-'+key)||fallback;}catch{return fallback;}}
+  function setTheme(value) {
+    state.theme=value; $('theme').value=value;
+    document.documentElement.dataset.theme=value==='auto'?(darkPreference.matches?'dark':'light'):value;
+    const css=getComputedStyle(document.documentElement);
+    ['plot','text','muted','grid','axis','trace','x','y','ref','line','surface','subtle'].forEach(k=>colors[k]=css.getPropertyValue('--'+k).trim());
+    inkCtx.save(); inkCtx.globalCompositeOperation='source-in'; inkCtx.fillStyle=colors.trace; inkCtx.fillRect(0,0,ink.width,ink.height); inkCtx.restore();
+    savePreference('theme',value); draw();
+  }
+  function setLayout(value) {
+    state.layout=value; $('layout').value=value;
+    const compact=value==='compact'||(value==='auto'&&compactPreference.matches);
+    document.body.classList.toggle('compact',compact); document.body.classList.toggle('wide',value==='wide');
+    for (const id of ['runPanel','settingsPanel']) {
+      if(compact){$(id).setAttribute('role','tabpanel');$(id).setAttribute('aria-labelledby',id==='runPanel'?'runTab':'settingsTab');}
+      else{$(id).removeAttribute('role');$(id).removeAttribute('aria-labelledby');}
     }
-
-
-    function bindAdvanced() {
-      const mf = el('maxFull_in');
-      const md = el('maxDrawXY_in');
-      if (mf) {
-        const upd = () => {
-          const v = parseInt(mf.value)||state.maxFull;
-          state.maxFull = Math.max(10000, v);
-          recomputeFullCurve(); drawAll();
-        };
-        mf.addEventListener('input', upd);
-        mf.addEventListener('change', upd);
-      }
-      if (md) {
-        const upd2 = () => {
-          const v = parseInt(md.value)||state.maxDrawXY;
-          state.maxDrawXY = Math.max(1000, v);
-          drawAll();
-        };
-        md.addEventListener('input', upd2);
-        md.addEventListener('change', upd2);
-      }
+    if(!compact&&state.screen==='settings'){state.screen='run';document.body.dataset.screen='run';updateTabs();}
+    savePreference('layout',value); resize();
+  }
+  function updateTabs(){
+    for(const id of ['run','settings']){const button=$(id+'Tab');button.setAttribute('aria-selected',String(state.screen===id));button.tabIndex=state.screen===id?0:-1;}
+  }
+  function switchScreen(screen){
+    if(screen==='settings')pause();
+    state.screen=screen;document.body.dataset.screen=screen;updateTabs();resize();
+  }
+  const definitions = [
+    {id:'Ax',channel:'x',key:'amp',label:'振幅 Aₓ',unit:'任意単位',min:0,max:5,host:'xControls'},
+    {id:'wx',channel:'x',key:'omega',label:'角振動数 ωₓ',unit:'rad/s',min:0,max:20,host:'xControls'},
+    {id:'phx',channel:'x',key:'phase',label:'位相 φₓ',unit:'rad',min:0,max:TAU,host:'xControls'},
+    {id:'Ay',channel:'y',key:'amp',label:'振幅 Aᵧ',unit:'任意単位',min:0,max:5,host:'yControls'},
+    {id:'wy',channel:'y',key:'omega',label:'角振動数 ωᵧ',unit:'rad/s',min:0,max:20,host:'yControls'},
+    {id:'phy',channel:'y',key:'phase',label:'位相 φᵧ',unit:'rad',min:0,max:TAU,host:'yControls'},
+    {id:'speed',key:'speed',label:'再生速度',unit:'倍',min:.1,max:5,host:'timeControls'},
+    {id:'win',key:'win',label:'時間グラフの表示幅',unit:'s',min:1,max:60,host:'timeControls'}
+  ];
+  function displaySpec(d){
+    if(d.key==='omega'&&state.unit==='hz')return {...d,label:'振動数 f'+(d.channel==='x'?'ₓ':'ᵧ'),unit:'Hz',min:0,max:20/TAU};
+    return d;
+  }
+  function getValue(d){const v=d.channel?state[d.channel][d.key]:state[d.key];return d.key==='omega'&&state.unit==='hz'?v/TAU:v;}
+  function syncControl(d){
+    const s=displaySpec(d),v=getValue(d);
+    $(d.id+'Label').textContent=s.label;$(d.id+'Unit').textContent=s.unit;
+    for(const id of [d.id,d.id+'_s']){const input=$(id);input.min=precise(s.min);input.max=precise(s.max);input.value=precise(v);}
+    $(d.id+'_s').setAttribute('aria-label',s.label+'のスライダー（'+s.unit+'）');
+    for(const sign of ['minus','plus'])$(d.id+'_'+sign).setAttribute('aria-label',s.label+'を0.1 '+s.unit+(sign==='plus'?'増やす':'減らす'));
+    $(d.id+'_minus').disabled=v<=s.min+1e-12;$(d.id+'_plus').disabled=v>=s.max-1e-12;
+    if(d.key==='omega')$(d.id+'Note').textContent=state.unit==='omega'?'f = '+pretty(v/TAU,6)+' Hz':'ω = '+pretty(v*TAU,6)+' rad/s';
+  }
+  function setParameter(d,input){
+    const s=displaySpec(d),parsed=Number(input);
+    if(String(input).trim()===''||!Number.isFinite(parsed)){syncControl(d);notify('有効な数値を入力してください。元の値を保ちました。');return;}
+    const shown=clamp(parsed,s.min,s.max),value=d.key==='omega'&&state.unit==='hz'?shown*TAU:shown;
+    const previous=d.channel?state[d.channel][d.key]:state[d.key];
+    if(d.channel)state[d.channel][d.key]=value;else state[d.key]=value;
+    syncControl(d);
+    if(parsed!==shown)notify('入力範囲 '+pretty(s.min,6)+' ～ '+pretty(s.max,6)+' '+s.unit+' に調整しました。');
+    if(Math.abs(previous-value)>1e-13){
+      if(d.channel){$('preset').value='custom';recompute();reset(false);}
+      else{lastTimestamp=null;updateConditions();draw();}
     }
-
-    function readParams() {
-      state.Ax = clamp(parseFloat(el('Ax')?.value)||1.0, 0, 5);
-      state.Ay = clamp(parseFloat(el('Ay')?.value)||1.0, 0, 5);
-      state.wx = Math.max(0, parseFloat(el('wx')?.value)||0);
-      state.wy = Math.max(0, parseFloat(el('wy')?.value)||0);
-      state.phx = clamp(parseFloat(el('phx')?.value)||0.0, 0, TWO_PI);
-      state.phy = clamp(parseFloat(el('phy')?.value)||0.0, 0, TWO_PI);
-      state.speed = clamp(parseFloat(el('speed')?.value)||1.0, 0.1, 5.0);
-      const wEl = el('win');
-      if (wEl) {
-        state.WIN = clamp(parseFloat(wEl.value)||16.0, 1.0, 60.0);
-      }
-      state.kindx = el('kindX').value;
-      state.kindy = el('kindY').value;
-    }
-    function resetHist() {
-      state.tNow = 0.0;
-      state.tHist.length = state.xHist.length = state.yHist.length = 0;
-      state.lastX = state.lastY = null;
-    }
-
-    function recomputeFullCurve() {
-      // Build full closed-form (or long) Lissajous path for current params
-      const {Ax, wx, phx, kindx, Ay, wy, phy, kindy, maxFull} = state;
-      let ratio = wx / Math.max(wy, 1e-12);
-      let [p, q] = rationalApprox(ratio, 64, 1e-7);
-      const Tfull = 2.0 * Math.PI * q / Math.max(wy, 1e-9);
-      const Nbase = Math.min(4000 * q, 120000);
-      const N = Math.min(Nbase, 5 * maxFull);
-      const dt = Tfull / N;
-      const EPS = 1e-9;
-      // Degenerate cases for zero frequencies
-      if (wx < EPS && wy < EPS) {
-        const xx = wave(Ax, 0, phx, 0, kindx);
-        const yy = wave(Ay, 0, phy, 0, kindy);
-        state.fullXY = [{x:[xx,xx], y:[yy,yy]}];
-        return;
-      }
-      if (wx < EPS && wy >= EPS) {
-        const T = 2.0 * Math.PI / Math.max(wy, EPS);
-        const N = Math.min(4000, Math.max(100, Math.floor(5 * maxFull)));
-        const dt = T / N;
-        const x0 = wave(Ax, 0, phx, 0, kindx);
-        const xs = new Array(N+1).fill(x0);
-        const ys = [];
-        for (let i=0,t=0; i<=N; i++, t+=dt) ys.push(wave(Ay, wy, phy, t, kindy));
-        state.fullXY = [{x: xs, y: ys}];
-        return;
-      }
-      if (wy < EPS && wx >= EPS) {
-        const T = 2.0 * Math.PI / Math.max(wx, EPS);
-        const N = Math.min(4000, Math.max(100, Math.floor(5 * maxFull)));
-        const dt = T / N;
-        const y0 = wave(Ay, 0, phy, 0, kindy);
-        const ys = new Array(N+1).fill(y0);
-        const xs = [];
-        for (let i=0,t=0; i<=N; i++, t+=dt) xs.push(wave(Ax, wx, phx, t, kindx));
-        state.fullXY = [{x: xs, y: ys}];
-        return;
-      }
-      const thrX = 1.5 * Math.max(Ax, 1e-12);
-      const thrY = 1.5 * Math.max(Ay, 1e-12);
-
-      const segs = [];
-      let xPrev = null, yPrev = null;
-      let xSeg = [], ySeg = [];
-      for (let i=0, t=0; i<=N; i++, t+=dt) {
-        const xx = wave(Ax, wx, phx, t, kindx);
-        const yy = wave(Ay, wy, phy, t, kindy);
-        if (xPrev !== null) {
-          if (Math.abs(xx - xPrev) > thrX || Math.abs(yy - yPrev) > thrY) {
-            if (xSeg.length > 1) segs.push({x: xSeg, y: ySeg});
-            xSeg = []; ySeg = [];
-          }
-        }
-        xSeg.push(xx); ySeg.push(yy);
-        xPrev = xx; yPrev = yy;
-      }
-      if (xSeg.length > 1) segs.push({x: xSeg, y: ySeg});
-
-      // Decimate to maxFull points total
-      const totalPts = segs.reduce((s,g)=>s+g.x.length, 0);
-      if (totalPts > maxFull) {
-        const keepRatio = maxFull / totalPts;
-        for (const g of segs) {
-          const step = Math.max(1, Math.floor(1/keepRatio));
-          g.x = g.x.filter((_,i)=> i%step===0);
-          g.y = g.y.filter((_,i)=> i%step===0);
-        }
-      }
-
-      state.fullXY = segs;
-    }
-
-    function onAnyParamChanged() {
-      readParams();
-      const wh = document.getElementById('winHint'); if (wh) wh.textContent = String(state.WIN);
-      resetHist();
-      recomputeFullCurve();
-      updateInfoPanel();
-    }
-
-    ['kindX','kindY'].forEach(id => {
-      el(id).addEventListener('change', onAnyParamChanged);
+  }
+  function buildControls(){
+    definitions.forEach(d=>{
+      const block=document.createElement('div');block.className='param';
+      block.innerHTML=`<div class="param-label"><label id="${d.id}Label" for="${d.id}"></label><span id="${d.id}Unit" class="param-unit"></span></div><div class="number-control"><button class="stepper" id="${d.id}_minus" type="button">−0.1</button><input id="${d.id}" type="number" step="any" inputmode="decimal" aria-describedby="${d.id}Unit${d.key==='omega'?' '+d.id+'Note':''}"><button class="stepper" id="${d.id}_plus" type="button">＋0.1</button></div><input type="range" step="any" id="${d.id}_s">${d.key==='omega'?`<span id="${d.id}Note" class="frequency-note mono"></span>`:''}`;
+      $(d.host).appendChild(block);
+      $(d.id).addEventListener('change',e=>setParameter(d,e.target.value));
+      $(d.id).addEventListener('keydown',e=>{if(e.key==='Enter')e.target.blur();if(e.key==='Escape'){syncControl(d);e.target.blur();}});
+      // Quantize only user drags; unit changes retain the exact internal value.
+      $(d.id+'_s').addEventListener('input',e=>setParameter(d,Number((Math.round(Number(e.target.value)*10)/10).toFixed(1))));
+      for(const [name,delta] of [['minus',-.1],['plus',.1]])$(d.id+'_'+name).addEventListener('click',()=>setParameter(d,Number((getValue(d)+delta).toFixed(12))));
+      syncControl(d);
     });
-
-    el('pause').addEventListener('click', ()=> state.running = !state.running );
-    el('reset').addEventListener('click', ()=> { resetHist(); recomputeFullCurve(); updateInfoPanel(); });
-
-    // --- Info panel updater ---
-    function updateInfoPanel() {
-      const setText = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
-      const fmt = (v) => (Math.abs(v) < 1e-6 ? '0.000' : v.toFixed(3));
-      setText('wxVal', fmt(state.wx));
-      setText('wyVal', fmt(state.wy));
-      setText('phxVal', fmt(state.phx));
-      setText('phyVal', fmt(state.phy));
+  }
+  function setUnit(unit){state.unit=unit;$('unitOmega').setAttribute('aria-pressed',String(unit==='omega'));$('unitHz').setAttribute('aria-pressed',String(unit==='hz'));definitions.filter(d=>d.key==='omega').forEach(syncControl);}
+  function recompute(){
+    range=1.12*Math.max(1,state.x.amp,state.y.amp);
+    cycle=cycleInfo(state.x,state.y);
+    const available=cycle.closed&&Number.isFinite(cycle.period)&&cycle.period>0;
+    reference=available?sample(state.x,state.y,0,cycle.period,18000):[];
+    $('traceMode').querySelector('[value=cycle]').disabled=!available;
+    $('fitPeriod').disabled=!available;
+    if(state.mode==='cycle'&&!available){state.mode='continuous';$('traceMode').value=state.mode;notify('この条件では一周を判定できないため、連続表示に切り替えました。');}
+    $('cycleNote').textContent=available?'共通周期 T = '+pretty(cycle.period,5)+' s。一周モードはこの時刻で停止します。':(state.x.omega===0||state.x.amp===0)&&(state.y.omega===0||state.y.amp===0)?'両入力が一定値のため、軌跡は点になります。':'64以下の整数比で共通周期を判定できません。一周表示と全体の参考線は無効です。';
+    updateConditions();
+  }
+  function strokeSamples(context,points,mapX,mapY,color,width,which='xy'){
+    if(points.length<2)return;
+    context.save();context.strokeStyle=color;context.lineWidth=width;context.lineCap='round';context.lineJoin='round';context.beginPath();
+    points.forEach((p,i)=>{
+      const x=mapX(p),y=mapY(p),cut=which==='x'?p.cutX:which==='y'?p.cutY:p.cutX||p.cutY;
+      if(i===0||cut)context.moveTo(x,y);else context.lineTo(x,y);
+    });context.stroke();context.restore();
+  }
+  const inkX=p=>(p.x+range)/(2*range)*ink.width;
+  const inkY=p=>(range-p.y)/(2*range)*ink.height;
+  function appendInk(start,end){
+    const pts=sample(state.x,state.y,start,end,4096);
+    strokeSamples(inkCtx,pts,inkX,inkY,colors.trace||'#d84c42',5.2);
+  }
+  function reset(forcePause=true){
+    if(forcePause)pause();
+    state.t=0;state.completed=false;lastTimestamp=null;
+    inkCtx.clearRect(0,0,ink.width,ink.height);
+    // Explicitly seed t=0, including phase-shifted and constant inputs.
+    const start={x:wave(state.x,0),y:wave(state.y,0)};
+    inkCtx.fillStyle=colors.trace||'#d84c42';inkCtx.beginPath();inkCtx.arc(inkX(start),inkY(start),2.6,0,TAU);inkCtx.fill();
+    updateTransport();updateConditions();draw();
+  }
+  function pause(){state.running=false;lastTimestamp=null;if(frameId!==null){cancelAnimationFrame(frameId);frameId=null;}updateTransport();}
+  function play(){
+    if(state.completed)reset(false);
+    state.running=true;lastTimestamp=null;updateTransport();
+    if(frameId===null)frameId=requestAnimationFrame(tick);
+  }
+  function advance(dt){
+    const previous=state.t;
+    state.t+=dt;
+    if(state.mode==='cycle'&&cycle?.period){state.t=Math.min(state.t,cycle.period);}
+    if(state.t>previous)appendInk(previous,state.t);
+    if(state.mode==='cycle'&&state.t>=cycle.period-1e-12){state.t=cycle.period;state.completed=true;pause();notify('一周分の描画が完了しました。');}
+  }
+  function tick(timestamp){
+    frameId=null;
+    if(!state.running||document.hidden)return;
+    if(lastTimestamp!==null){const dt=Math.min((timestamp-lastTimestamp)/1000,.1);advance(dt*state.speed);}
+    lastTimestamp=timestamp;draw();
+    if(state.running)frameId=requestAnimationFrame(tick);
+  }
+  function updateTransport(){
+    document.body.classList.toggle('is-running',state.running);
+    $('play').textContent=state.running?'Ⅱ 一時停止':state.completed?'↻ もう一周':'▶ 再生';
+    $('play').setAttribute('aria-label',state.running?'シミュレーションを一時停止':state.completed?'もう一周を最初から再生':'シミュレーションを再生');
+    $('step').disabled=state.running||state.completed;
+    $('runStatus').textContent=state.running?'再生中':state.completed?'一周完了':state.t===0?'準備完了':'一時停止';
+  }
+  function updateConditions(){
+    for(const c of ['x','y']){
+      const v=state[c];$(c+'KindText').textContent=v.kind==='sin'?'正弦波':'鋸歯状波';
+      $(c+'Equation').textContent=c+'(t) = '+pretty(v.amp)+' '+(v.kind==='sin'?'sin':'saw')+'('+pretty(v.omega)+'t + '+pretty(v.phase)+')';
+      $(c+'Parameters').textContent='ω = '+pretty(v.omega,6)+' rad/s\nf = '+pretty(v.omega/TAU,6)+' Hz\nφ = '+pretty(v.phase,6)+' rad';
+      $(c+'Parameters').style.whiteSpace='pre-line';
     }
-
-    // --- Drawing helpers ---
-    function drawGrid(ctx, x0, y0, x1, y1, xTicks=6, yTicks=6) {
-      ctx.save();
-      ctx.strokeStyle = '#a9b1bb16'; // faint
-      ctx.lineWidth = 1;
-      const w = x1-x0, h = y1-y0;
-      for (let i=1;i<xTicks;i++){
-        const x = x0 + (w*i/xTicks);
-        ctx.beginPath(); ctx.moveTo(x, y0); ctx.lineTo(x, y1); ctx.stroke();
+    updateDynamicReadout();
+    const description=state.mode==='continuous'?'開始からの軌跡を蓄積します。時間グラフは直近 '+pretty(state.win)+' s を表示。':state.mode==='window'?'XY・時間グラフとも、直近 '+pretty(state.win)+' s の軌跡を表示します。':'共通周期 T = '+pretty(cycle?.period||0,5)+' s の一周分を描いて停止します。';
+    $('traceDescription').textContent=description;
+    $('progress').hidden=state.mode!=='cycle';
+  }
+  function updateDynamicReadout(){
+    $('timeReadout').textContent='t = '+state.t.toFixed(3)+' s';
+    $('xValue').textContent='現在 x = '+wave(state.x,state.t).toFixed(3);
+    $('yValue').textContent='現在 y = '+wave(state.y,state.t).toFixed(3);
+    const percent=state.mode==='cycle'&&cycle?.period?clamp(state.t/cycle.period*100,0,100):0;
+    $('progressFill').style.width=percent+'%';$('progress').setAttribute('aria-valuenow',String(Math.round(percent)));
+  }
+  function resize(){
+    const w=canvas.parentElement.clientWidth;
+    if(w<50)return;
+    const small=w<500,left=small?27:38,top=small?29:36,gap=small?32:45,right=small?13:18,bottom=small?23:30;
+    const available=w-left-right-gap,side=available*.70,timeWidth=available*.30,timeHeight=side*(small?.49:.37);
+    const h=top+side+gap+timeHeight+bottom;
+    geometry={w,h,left,top,side,gap,right,timeWidth,timeHeight,small,ytX:left+side+gap,xtY:top+side+gap};
+    const dpr=Math.min(devicePixelRatio||1,2.5);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);canvas.style.height=h+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);draw();
+  }
+  function text(str,x,y,{color=colors.muted,size=12,align='left',weight=400,maxWidth}={}){
+    ctx.fillStyle=color;ctx.font=weight+' '+size+'px "Yu Gothic UI",Meiryo,system-ui,sans-serif';ctx.textAlign=align;ctx.textBaseline='alphabetic';
+    if(maxWidth)ctx.fillText(str,x,y,maxWidth);else ctx.fillText(str,x,y);
+  }
+  function line(x1,y1,x2,y2,color,width=1,dash=[]){ctx.save();ctx.strokeStyle=color;ctx.lineWidth=width;ctx.setLineDash(dash);ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.restore();}
+  function point(x,y,color,r=4){ctx.save();ctx.fillStyle=colors.plot;ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,r,0,TAU);ctx.fill();ctx.stroke();ctx.restore();}
+  function plotBox(x,y,w,h){ctx.fillStyle=colors.plot;ctx.fillRect(x,y,w,h);ctx.strokeStyle=colors.line;ctx.lineWidth=1;ctx.strokeRect(x,y,w,h);}
+  function clip(x,y,w,h,fn){ctx.save();ctx.beginPath();ctx.rect(x-.5,y-.5,w+1,h+1);ctx.clip();fn();ctx.restore();}
+  function draw(){
+    if(!geometry||!colors.plot||state.screen==='settings'&&document.body.classList.contains('compact'))return;
+    const g=geometry,{w,h,left:L,top:T,side:S,gap:G,ytX:YX,xtY:XY,timeWidth:TW,timeHeight:TH,small}=g;
+    ctx.clearRect(0,0,w,h);ctx.fillStyle=colors.surface;ctx.fillRect(0,0,w,h);
+    const sx=v=>L+(v+range)/(2*range)*S,sy=v=>T+(range-v)/(2*range)*S;
+    const timeMin=Math.max(0,state.t-state.win),tx=t=>YX+(t-timeMin)/state.win*TW,ty=t=>XY+(t-timeMin)/state.win*TH;
+    const fs=small?10:11,heading=small?12:14;
+    plotBox(L,T,S,S);plotBox(YX,T,TW,S);plotBox(L,XY,S,TH);
+    text('XY 合成',L,T-12,{size:heading,color:colors.text,weight:700});
+    text('Y 入力',YX,T-12,{size:heading,color:colors.y,weight:700});
+    text('X 入力 · t↓',L,XY-12,{size:heading,color:colors.x,weight:700});
+    if($('showGrid').checked){
+      const amplitude=Math.max(1,state.x.amp,state.y.amp);
+      for(const value of [-amplitude,-amplitude/2,0,amplitude/2,amplitude]){
+        const x=sx(value),y=sy(value),axis=value===0;
+        line(x,T,x,T+S,axis?colors.axis:colors.grid,axis?1.2:.8);line(L,y,L+S,y,axis?colors.axis:colors.grid,axis?1.2:.8);
+        line(x,XY,x,XY+TH,axis?colors.axis:colors.grid,axis?1.2:.8);line(YX,y,YX+TW,y,axis?colors.axis:colors.grid,axis?1.2:.8);
+        if(value===0||Math.abs(value)===amplitude){text(pretty(value,1),L-6,y+3,{align:'right',size:fs});text(pretty(value,1),x,T+S+14,{align:'center',size:fs});text(pretty(value,1),x,XY+TH+15,{align:'center',size:fs});}
       }
-      for (let i=1;i<yTicks;i++){
-        const y = y0 + (h*i/yTicks);
-        ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke();
+      for(let i=0;i<=2;i++){
+        const time=timeMin+state.win*i/2,x=tx(time),y=ty(time);
+        line(x,T,x,T+S,colors.grid,.8);line(L,y,L+S,y,colors.grid,.8);
+        text(pretty(time,1),x,T+S+14,{size:fs,align:i===0?'left':i===2?'right':'center'});
+        text(pretty(time,1),L-6,y+3,{size:fs,align:'right'});
       }
-      ctx.restore();
     }
-
-    function strokePath(ctx, xs, ys, color, width=1.2, alpha=1.0) {
-      if (!xs || xs.length<2) return;
-      ctx.save();
-      ctx.globalAlpha = alpha;
-      ctx.strokeStyle = color; ctx.lineWidth = width; ctx.beginPath();
-      ctx.moveTo(xs[0], ys[0]);
-      for (let i=1;i<xs.length;i++) ctx.lineTo(xs[i], ys[i]);
-      ctx.stroke();
-      ctx.restore();
+    text('x',L+S-2,T+S+14,{size:fs,color:colors.x,align:'right'});
+    text('y',L-8,T+8,{size:fs,color:colors.y,align:'right'});
+    text(small?'t (s) →':'t (s) →',YX+TW,T+S+28,{size:fs,align:'right'});
+    ctx.save();ctx.translate(small?9:12,XY+TH/2);ctx.rotate(-Math.PI/2);text('t (s)',0,0,{size:fs,align:'center'});ctx.restore();
+    if($('showReference').checked&&reference.length){
+      clip(L,T,S,S,()=>strokeSamples(ctx,reference,p=>sx(p.x),p=>sy(p.y),colors.ref,1.2));
     }
-
-    // --- Axes ranges (auto from Ax/Ay) ---
-    function ranges() {
-      const R = state.margin * Math.max(Math.max(state.Ax, state.Ay), 1.0);
-      return {xmin:-R, xmax:R, ymin:-R, ymax:R};
-    }
-
-    // World->Screen mappers per canvas
-    function makeMapperXY(canvas) {
-      const {width:w, height:h} = canvas;
-      const {xmin,xmax,ymin,ymax} = ranges();
-      const sx = (x) => ( (x - xmin) / (xmax - xmin) ) * (w-20) + 10;
-      const sy = (y) => ( 1 - (y - ymin) / (ymax - ymin) ) * (h-20) + 10;
-      return {sx, sy, xmin,xmax,ymin,ymax, w, h};
-    }
-    function makeMapperXT(canvas) {
-      const {width:w, height:h} = canvas;
-      const {xmin,xmax} = ranges();
-      const tmin = 0, tmax = state.WIN;
-      const sx = (x) => ( (x - xmin) / (xmax - xmin) ) * (w-20) + 10;
-      const sy = (t) => ( (t - tmin) / (tmax - tmin) ) * (h-20) + 10; // downward
-      return {sx, sy, xmin,xmax, tmin, tmax, w, h};
-    }
-    function makeMapperYT(canvas) {
-      const {width:w, height:h} = canvas;
-      const {ymin,ymax} = ranges();
-      const tmin = 0, tmax = state.WIN;
-      const sx = (t) => ( (t - tmin) / (tmax - tmin) ) * (w-20) + 10;
-      const sy = (y) => ( 1 - (y - ymin) / (ymax - ymin) ) * (h-20) + 10;
-      return {sx, sy, ymin,ymax, tmin, tmax, w, h};
-    }
-
-    function decimate(xs, ys, maxPts) {
-      const n = xs.length;
-      if (n <= maxPts) return {xs, ys};
-      const step = Math.max(1, Math.floor(n / maxPts));
-      const xd = [], yd = [];
-      for (let i=0;i<n;i+=step) { xd.push(xs[i]); yd.push(ys[i]); }
-      return {xs: xd, ys: yd};
-    }
-
-    // --- Main render ---
-    let lastTs = performance.now();
-    function tick(ts) {
-      const dt = Math.min(50, (ts - lastTs)) / 1000; // clamp
-      lastTs = ts;
-
-      if (state.running) {
-        state.tNow += dt * state.speed;
-        const xNow = wave(state.Ax, state.wx, state.phx, state.tNow, state.kindx);
-        const yNow = wave(state.Ay, state.wy, state.phy, state.tNow, state.kindy);
-
-        const thrX = 1.5 * Math.max(state.Ax, 1e-12);
-        const thrY = 1.5 * Math.max(state.Ay, 1e-12);
-        if (state.lastX !== null && (Math.abs(xNow - state.lastX) > thrX || Math.abs(yNow - state.lastY) > thrY)) {
-          state.xHist.push(NaN); state.yHist.push(NaN); state.tHist.push(state.tNow);
-        }
-        state.lastX = xNow; state.lastY = yNow;
-
-        state.xHist.push(xNow); state.yHist.push(yNow); state.tHist.push(state.tNow);
-
-        if (state.tHist.length > state.maxKeep) {
-          const drop = state.tHist.length - state.maxKeep;
-          state.tHist.splice(0, drop); state.xHist.splice(0, drop); state.yHist.splice(0, drop);
-        }
+    const timeSamples=sample(state.x,state.y,timeMin,state.t,9000);
+    clip(L,T,S,S,()=>{
+      if(state.mode==='window')strokeSamples(ctx,timeSamples,p=>sx(p.x),p=>sy(p.y),colors.trace,2.1);
+      else {
+        // Subpixel dilation preserves readable ink when the fixed-size layer is reduced on phones.
+        if(small){for(const [dx,dy] of [[-.4,0],[.4,0],[0,-.4],[0,.4]])ctx.drawImage(ink,L+dx,T+dy,S,S);}
+        ctx.drawImage(ink,L,T,S,S);
       }
-
-      // Compute window
-      const tmin = Math.max(0, state.tNow - state.WIN);
-      // find start index
-      let i0 = 0;
-      while (i0 < state.tHist.length && state.tHist[i0] < tmin) i0++;
-      const tWin = state.tHist.slice(i0);
-      const xWin = state.xHist.slice(i0);
-      const yWin = state.yHist.slice(i0);
-
-      // --- Draw XY ---
-      {
-        const ctx = xy.getContext('2d');
-        const map = makeMapperXY(xy);
-        ctx.clearRect(0,0,map.w,map.h);
-        drawGrid(ctx, 10, 10, map.w-10, map.h-10, 6, 6);
-        // axes (X=0, Y=0)
-        if (el('axes') && el('axes').checked) {
-          ctx.save();
-          ctx.strokeStyle = '#2a2d38';
-          ctx.lineWidth = 1.0;
-          const AX = map.sx(0), AY = map.sy(0);
-          ctx.beginPath(); ctx.moveTo(14, AY); ctx.lineTo(map.w-14, AY); ctx.stroke();
-          ctx.beginPath(); ctx.moveTo(AX, 14); ctx.lineTo(AX, map.h-14); ctx.stroke();
-          ctx.restore();
-        }
-
-        // full curve (gray, possibly multi segments for saw) — toggleable
-        if (el('fullcurve') && el('fullcurve').checked) {
-          ctx.save();
-          ctx.globalAlpha = 0.85;
-          ctx.strokeStyle = '#cfd6de';
-          ctx.lineWidth = 1.0;
-          for (const seg of state.fullXY) {
-            if (!seg || seg.x.length<2) continue;
-            ctx.beginPath();
-            ctx.moveTo(map.sx(seg.x[0]), map.sy(seg.y[0]));
-            for (let i=1;i<seg.x.length;i++) ctx.lineTo(map.sx(seg.x[i]), map.sy(seg.y[i]));
-            ctx.stroke();
-          }
-          ctx.restore();
-        }
-
-        // trajectory (red) with decimation
-        const xs = [], ys = [];
-        for (let i=0;i<xWin.length;i++) {
-          const xv = xWin[i], yv = yWin[i];
-          if (Number.isNaN(xv) || Number.isNaN(yv)) {
-            if (xs.length>1) {
-              const d = decimate(xs, ys, state.maxDrawXY);
-              strokePath(ctx, d.xs.map(map.sx), d.ys.map(map.sy), '#e74a3b', 2.0, 1.0);
-            }
-            xs.length = ys.length = 0;
-            continue;
-          }
-          xs.push(xv); ys.push(yv);
-        }
-        if (xs.length>1) {
-          const d = decimate(xs, ys, state.maxDrawXY);
-          strokePath(ctx, d.xs.map(map.sx), d.ys.map(map.sy), '#e74a3b', 2.0, 1.0);
-        }
-
-        // current point + guides
-        const xNow = state.lastX ?? 0, yNow = state.lastY ?? 0;
-        const X = map.sx(xNow), Y = map.sy(yNow);
-
-        if (el('guides').checked) {
-          // horizontal: from point to RIGHT only
-          ctx.save();
-          ctx.setLineDash([6,6]); ctx.strokeStyle = '#999'; ctx.globalAlpha = 0.55;
-          ctx.beginPath(); ctx.moveTo(X, Y); ctx.lineTo(map.w-10, Y); ctx.stroke();
-          // vertical: from BOTTOM to point only
-          ctx.beginPath(); ctx.moveTo(X, map.h-10); ctx.lineTo(X, Y); ctx.stroke();
-          ctx.restore();
-        }
-
-        // dot
-        ctx.save();
-        ctx.fillStyle = '#0b0c0f';
-        ctx.strokeStyle = '#e74a3b';
-        ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.arc(X, Y, 6, 0, TWO_PI); ctx.fill(); ctx.stroke();
-        ctx.restore();
-      }
-
-      // --- Draw x(t): time downward ---
-      {
-        const ctx = xt.getContext('2d');
-        const map = makeMapperXT(xt);
-        ctx.clearRect(0,0,map.w,map.h);
-        drawGrid(ctx, 10, 10, map.w-10, map.h-10, 6, 6);
-        // axis (x=0)
-        if (el('axes') && el('axes').checked) {
-          ctx.save();
-          ctx.strokeStyle = '#2a2d38';
-          ctx.lineWidth = 1.0;
-          const AX0 = map.sx(0);
-          ctx.beginPath(); ctx.moveTo(AX0, 14); ctx.lineTo(AX0, map.h-14); ctx.stroke();
-          ctx.restore();
-        }
-
-        const xs=[], ts=[];
-        for (let i=0;i<tWin.length;i++) {
-          const tv = tWin[i] - tmin;
-          const xv = xWin[i];
-          if (Number.isNaN(xv)) {
-            if (xs.length>1) {
-              const d = decimate(xs, ts, state.maxDrawTime);
-              strokePath(ctx, d.xs.map(map.sx), d.ys.map(map.sy), '#3da5ff', 1.6, 1.0);
-            }
-            xs.length = ts.length = 0;
-            continue;
-          }
-          xs.push(xv); ts.push(tv);
-        }
-        if (xs.length>1) {
-          const d = decimate(xs, ts, state.maxDrawTime);
-          strokePath(ctx, d.xs.map(map.sx), d.ys.map(map.sy), '#3da5ff', 1.6, 1.0);
-        }
-
-        const xNow = state.lastX ?? 0;
-        const tRel = state.tNow - tmin;
-        const X = map.sx(xNow), Y = map.sy(tRel);
-
-        if (el('guides').checked) {
-          ctx.save();
-          ctx.setLineDash([6,6]); ctx.strokeStyle = '#999'; ctx.globalAlpha = 0.45;
-          ctx.beginPath(); ctx.moveTo(X, 10); ctx.lineTo(X, map.h-10); ctx.stroke();
-          ctx.restore();
-        }
-
-        ctx.save();
-        ctx.fillStyle = '#0b0c0f';
-        ctx.strokeStyle = '#3da5ff';
-        ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.arc(X, Y, 5.5, 0, TWO_PI); ctx.fill(); ctx.stroke();
-        ctx.restore();
-      }
-
-      // --- Draw y(t): time to right ---
-      {
-        const ctx = yt.getContext('2d');
-        const map = makeMapperYT(yt);
-        ctx.clearRect(0,0,map.w,map.h);
-        drawGrid(ctx, 10, 10, map.w-10, map.h-10, 6, 6);
-        // axis (y=0)
-        if (el('axes') && el('axes').checked) {
-          ctx.save();
-          ctx.strokeStyle = '#2a2d38';
-          ctx.lineWidth = 1.0;
-          const AY0 = map.sy(0);
-          ctx.beginPath(); ctx.moveTo(14, AY0); ctx.lineTo(map.w-14, AY0); ctx.stroke();
-          ctx.restore();
-        }
-
-        const ys=[], ts=[];
-        for (let i=0;i<tWin.length;i++) {
-          const tv = tWin[i] - tmin;
-          const yv = yWin[i];
-          if (Number.isNaN(yv)) {
-            if (ys.length>1) {
-              const d = decimate(ts, ys, state.maxDrawTime);
-              strokePath(ctx, d.xs.map(map.sx), d.ys.map(map.sy), '#ff9f1a', 1.6, 1.0);
-            }
-            ys.length = ts.length = 0;
-            continue;
-          }
-          ts.push(tv); ys.push(yv);
-        }
-        if (ys.length>1) {
-          const d = decimate(ts, ys, state.maxDrawTime);
-          strokePath(ctx, d.xs.map(map.sx), d.ys.map(map.sy), '#ff9f1a', 1.6, 1.0);
-        }
-
-        const yNow = state.lastY ?? 0;
-        const tRel = state.tNow - tmin;
-        const X = map.sx(tRel), Y = map.sy(yNow);
-
-        if (el('guides').checked) {
-          ctx.save();
-          ctx.setLineDash([6,6]); ctx.strokeStyle = '#999'; ctx.globalAlpha = 0.45;
-          ctx.beginPath(); ctx.moveTo(10, Y); ctx.lineTo(map.w-10, Y); ctx.stroke();
-          ctx.restore();
-        }
-
-        ctx.save();
-        ctx.fillStyle = '#0b0c0f';
-        ctx.strokeStyle = '#ff9f1a';
-        ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.arc(X, Y, 5.5, 0, TWO_PI); ctx.fill(); ctx.stroke();
-        ctx.restore();
-      }
-
-      requestAnimationFrame(tick);
+    });
+    clip(L,XY,S,TH,()=>strokeSamples(ctx,timeSamples,p=>sx(p.x),p=>ty(p.t),colors.x,1.8,'x'));
+    clip(YX,T,TW,S,()=>strokeSamples(ctx,timeSamples,p=>tx(p.t),p=>sy(p.y),colors.y,1.8,'y'));
+    const x=wave(state.x,state.t),y=wave(state.y,state.t),px=sx(x),py=sy(y),ptx=tx(state.t),pty=ty(state.t);
+    if($('showGuides').checked){line(px,py,px,pty,colors.x,1,[4,4]);line(px,py,ptx,py,colors.y,1,[4,4]);}
+    point(px,pty,colors.x,small?3.7:4.5);point(ptx,py,colors.y,small?3.7:4.5);
+    if($('showMarker').checked){
+      ctx.save();ctx.globalAlpha=.16;ctx.fillStyle=colors.trace;ctx.beginPath();ctx.arc(px,py,small?11:13,0,TAU);ctx.fill();ctx.restore();
+      point(px,py,colors.trace,small?5:6);
     }
+    // The unused lower-right quadrant holds the shared simulation conditions.
+    const ix=YX,iy=XY+(small?1:3);
+    text(small?'振動数比':'現在の条件 / fₓ : fᵧ',ix,iy+10,{size:small?10:11});
+    const ratio=state.y.omega===0?(state.x.omega===0?'一定値':'Y = 一定'):cycle?.p&&cycle?.q?cycle.p+' : '+cycle.q:pretty(state.x.omega/state.y.omega,3)+' : 1';
+    text(ratio,ix,iy+(small?32:42),{size:small?19:Math.min(29,TW*.15),color:colors.text,weight:700,maxWidth:TW});
+    const periodic=cycle?.period>0&&cycle.closed;
+    text(periodic?'T = '+pretty(cycle.period,3)+' s':'T : '+((!state.x.omega||!state.x.amp)&&(!state.y.omega||!state.y.amp)?'一定値':'判定外'),ix,iy+(small?52:66),{size:small?10:12,maxWidth:TW});
+    if(TH>85)text((state.mode==='cycle'?'一周':'連続')+' · '+pretty(state.speed,1)+'×',ix,iy+(small?72:89),{size:small?10:12});
+    if(!small&&TH>135){text('ωₓ '+pretty(state.x.omega)+' / ωᵧ '+pretty(state.y.omega),ix,iy+114,{size:11});text('φₓ '+pretty(state.x.phase)+' / φᵧ '+pretty(state.y.phase),ix,iy+132,{size:11});}
+    const now=performance.now();if(!state.running||now-lastReadout>70){updateDynamicReadout();lastReadout=now;}
+  }
+  function applyPreset(name){
+    if(name==='custom')return;
+    state.x=clone(initial.x);state.y=clone(initial.y);
+    if(name==='circle'){state.x.omega=state.y.omega=2;state.y.phase=Math.PI/2;}
+    if(name==='line'){state.x.omega=state.y.omega=2;}
+    if(name==='twoOne'){state.x.omega=4;state.y.omega=2;}
+    if(name==='sweep'){state.x.kind='saw';state.x.omega=2;state.y.omega=6;}
+    $('preset').value=name;$('kindX').value=state.x.kind;$('kindY').value=state.y.kind;
+    definitions.forEach(syncControl);recompute();reset();
+  }
+  function saveImage(){
+    draw();
+    const g=geometry,scale=2,outWidth=Math.max(g.w,660),graphHeight=g.h*outWidth/g.w,output=document.createElement('canvas');output.width=Math.round(outWidth*scale);output.height=Math.round((graphHeight+130)*scale);
+    const c=output.getContext('2d');c.scale(scale,scale);c.fillStyle=colors.surface;c.fillRect(0,0,outWidth,graphHeight+130);c.drawImage(canvas,0,40,outWidth,graphHeight);
+    c.fillStyle=colors.text;c.font='bold 16px Meiryo, sans-serif';c.fillText('リサジュー・スコープ',14,25);c.font='12px Meiryo, sans-serif';
+    c.fillText('t = '+state.t.toFixed(3)+' s / '+$('traceMode').selectedOptions[0].textContent,14,graphHeight+60);
+    for(const [i,k] of ['x','y'].entries()){const v=state[k];c.fillStyle=colors[k];c.fillText(k.toUpperCase()+' '+v.kind+' : A='+pretty(v.amp)+'  ω='+pretty(v.omega,4)+' rad/s  φ='+pretty(v.phase,4)+' rad',14,graphHeight+82+i*20);}
+    const link=document.createElement('a');link.download='lissajous-'+state.t.toFixed(3)+'s.png';link.href=output.toDataURL('image/png');link.click();
+  }
+  buildControls();
+  $('theme').addEventListener('change',e=>setTheme(e.target.value));$('layout').addEventListener('change',e=>setLayout(e.target.value));
+  $('unitOmega').addEventListener('click',()=>setUnit('omega'));$('unitHz').addEventListener('click',()=>setUnit('hz'));
+  $('runTab').addEventListener('click',()=>switchScreen('run'));$('settingsTab').addEventListener('click',()=>switchScreen('settings'));
+  document.querySelector('.mobile-tabs').addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){e.preventDefault();const screen=e.key==='Home'?'run':e.key==='End'?'settings':state.screen==='run'?'settings':'run';switchScreen(screen);$(screen+'Tab').focus();}});
+  $('applyRun').addEventListener('click',()=>{switchScreen('run');play();$('runTab').focus();});
+  $('play').addEventListener('click',()=>state.running?pause():play());
+  $('reset').addEventListener('click',()=>reset());
+  $('step').addEventListener('click',()=>{pause();advance(.1);updateTransport();draw();});
+  $('preset').addEventListener('change',e=>applyPreset(e.target.value));
+  for(const c of ['x','y'])$('kind'+c.toUpperCase()).addEventListener('change',e=>{state[c].kind=e.target.value;$('preset').value='custom';recompute();reset(false);});
+  $('traceMode').addEventListener('change',e=>{state.mode=e.target.value;reset();updateConditions();});
+  for(const id of ['showMarker','showGuides','showReference','showGrid'])$(id).addEventListener('change',draw);
+  $('defaults').addEventListener('click',()=>{state.speed=initial.speed;state.win=initial.win;state.mode='continuous';$('traceMode').value=state.mode;setUnit('omega');for(const id of ['showMarker','showGuides','showReference','showGrid'])$(id).checked=true;applyPreset('threeTwo');notify('初期条件に戻しました。');});
+  $('fitPeriod').addEventListener('click',()=>{if(cycle?.period){state.win=clamp(cycle.period,1,60);syncControl(definitions.find(d=>d.key==='win'));updateConditions();draw();if(cycle.period<1||cycle.period>60)notify('表示幅の範囲（1～60秒）に調整しました。');}});
+  $('saveImage').addEventListener('click',saveImage);
+  document.addEventListener('keydown',e=>{if(e.code==='Space'&&!e.repeat&&!['INPUT','SELECT','TEXTAREA','BUTTON','SUMMARY'].includes(e.target.tagName)&&state.screen==='run'){e.preventDefault();state.running?pause():play();}});
+  document.addEventListener('visibilitychange',()=>{lastTimestamp=null;if(document.hidden){if(frameId!==null){cancelAnimationFrame(frameId);frameId=null;}}else if(state.running&&frameId===null){frameId=requestAnimationFrame(tick);}});
+  darkPreference.addEventListener('change',()=>{if(state.theme==='auto')setTheme('auto');});compactPreference.addEventListener('change',()=>{if(state.layout==='auto')setLayout('auto');});
+  new ResizeObserver(resize).observe(canvas.parentElement);
+  window.addEventListener('resize',resize);
+  const storedTheme=readPreference('theme','light'),storedLayout=readPreference('layout','auto');
+  setTheme(['light','dark','auto'].includes(storedTheme)?storedTheme:'light');
+  recompute();setLayout(['auto','compact','wide'].includes(storedLayout)?storedLayout:'auto');reset();
+  // Read-only diagnostics support repeatable local verification without production dependencies.
+  window.ScopeDiagnostics=Object.freeze({snapshot:()=>clone({x:state.x,y:state.y,speed:state.speed,win:state.win,t:state.t,running:state.running,completed:state.completed,mode:state.mode,unit:state.unit,cycle,geometry,inkSize:ink.width}),sample:(a,b)=>sample(state.x,state.y,a,b,24000)});
+})();
 
-    // Init
-    bindAllPairs(); bindAdvanced();
-    onAnyParamChanged();
-    recomputeFullCurve();
-    requestAnimationFrame(tick);
-  </script>
+</script>
 </body>
 </html>
