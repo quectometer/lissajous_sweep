@@ -10,11 +10,14 @@
 :root{color-scheme:light;--bg:#f0f3f6;--surface:#fff;--subtle:#f7f9fb;--text:#172638;--muted:#586b7d;--line:#d8e1e9;--grid:#e3e9ee;--axis:#8395a5;--accent:#245ce2;--accent-soft:#eaf0ff;--trace:#d84c42;--x:#1767c0;--y:#a65e04;--ref:#aab6c1;--plot:#fff;--shadow:0 3px 18px #18364a08}
 :root[data-theme=dark]{color-scheme:dark;--bg:#0d1621;--surface:#142130;--subtle:#192939;--text:#e8eff7;--muted:#acbdcc;--line:#304356;--grid:#283b4d;--axis:#71879c;--accent:#8bb4ff;--accent-soft:#213b60;--trace:#ff897c;--x:#78b8ff;--y:#ffc16c;--ref:#63788b;--plot:#111e2c;--shadow:0 3px 18px #0002}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:"Yu Gothic UI","Hiragino Kaku Gothic ProN",Meiryo,system-ui,sans-serif;line-height:1.55}button,input,select{font:inherit;color:inherit}button,select,input[type=number]{border:1px solid var(--line);background:var(--surface);border-radius:9px;min-height:44px}button{cursor:pointer;padding:8px 13px;font-weight:650;touch-action:manipulation}button:hover:not(:disabled){background:var(--accent-soft);border-color:var(--accent)}button:disabled{opacity:.45;cursor:default}button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}select{padding:8px 29px 8px 11px;max-width:100%}input[type=checkbox]{width:19px;height:19px;accent-color:var(--accent);flex:none}input[type=number]{width:100%;padding:5px 8px;font-size:16px;font-variant-numeric:tabular-nums;text-align:center;appearance:textfield;-moz-appearance:textfield}input::-webkit-inner-spin-button,input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}h1,h2,h3,p{margin:0}h2{font-size:17px}small,.hint{font-size:12px;color:var(--muted)}.mono{font-variant-numeric:tabular-nums;font-family:Consolas,"SFMono-Regular",monospace}.shell{max-width:1460px;margin:0 auto;padding:24px 26px 32px}.masthead{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:22px}.brand{display:flex;align-items:center;gap:13px}.brand-icon{width:45px;height:45px;color:var(--accent);background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:9px;flex:none}.eyebrow{font-size:10px;letter-spacing:.16em;color:var(--muted);font-weight:750}h1{font-size:23px;letter-spacing:.01em;font-weight:750}.top-options{display:flex;gap:10px}.top-options label{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}.top-options select{font-size:13px;min-height:40px}.workspace{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:18px;align-items:start}.panel{background:var(--surface);border:1px solid var(--line);border-radius:17px;box-shadow:var(--shadow);overflow:hidden}.stage{min-width:0}.stage-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:19px 22px 12px}.stage-heading h2{font-size:16px}.kicker{font-size:11px;color:var(--muted);letter-spacing:.05em}.live-pill{display:inline-flex;gap:7px;align-items:center;white-space:nowrap;font-size:12px;color:var(--muted);background:var(--subtle);padding:5px 10px;border-radius:30px}.status-dot{width:7px;height:7px;border-radius:50%;background:var(--axis)}body.is-running .status-dot{background:var(--trace)}.canvas-wrap{margin:0 14px;position:relative}canvas{display:block;width:100%;height:auto}.transport{display:flex;align-items:center;gap:8px;padding:13px 20px;border-top:1px solid var(--line);background:var(--subtle);flex-wrap:wrap}.primary{background:var(--accent);border-color:var(--accent);color:#fff;min-width:118px}:root[data-theme=dark] .primary{color:#0b1b30}.primary:hover:not(:disabled){background:var(--accent);filter:brightness(.94)}.transport .time{margin-left:auto;font-size:14px;white-space:nowrap}.progress-track{height:3px;background:var(--line)}.progress-track i{display:block;width:0;height:100%;background:var(--trace)}.trace-description{padding:10px 20px 12px;font-size:12px;color:var(--muted);min-height:40px}.legend{display:flex;gap:18px;flex-wrap:wrap;padding:0 22px 15px;color:var(--muted);font-size:12px}.legend span{display:inline-flex;align-items:center;gap:6px}.legend i{width:20px;height:3px;background:var(--trace);display:inline-block;border-radius:3px}.legend .ref-line{background:var(--ref);height:2px}.legend .point-key{width:10px;height:10px;border-radius:50%;background:var(--surface);border:2px solid var(--trace)}.readout{margin-top:15px;display:grid;grid-template-columns:1fr 1fr;gap:12px}.channel-readout{padding:14px 17px;border:1px solid var(--line);border-radius:12px;background:var(--surface);min-width:0}.channel-readout h3{font-size:13px;margin-bottom:5px;display:flex;align-items:center;gap:7px}.channel-readout p{font-size:12px;line-height:1.8;overflow-wrap:anywhere}.channel-readout .equation{font-size:13px;font-weight:650}.x-color{color:var(--x)}.y-color{color:var(--y)}.channel-dot{width:7px;height:7px;background:currentColor;border-radius:50%}.caption{font-size:12px;color:var(--muted);padding:12px 3px 0}.tool-links{display:flex;gap:9px;margin-top:12px;flex-wrap:wrap}.tool-links button{font-size:12px;min-height:38px;padding:6px 11px}.settings{padding:18px}.settings-header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}.settings-header .quiet{font-size:11px;padding:5px 8px;min-height:36px;color:var(--muted)}.field-label{display:block;font-size:12px;font-weight:650;margin-bottom:5px}.full-width{width:100%}.setting-section{margin-top:18px;border-top:1px solid var(--line);padding-top:15px}.setting-section h3{font-size:12px;color:var(--muted);letter-spacing:.04em;margin-bottom:9px}.segmented{display:flex;padding:3px;background:var(--subtle);border:1px solid var(--line);border-radius:10px;gap:3px}.segmented button{flex:1;font-size:12px;padding:6px 5px;min-height:38px;background:transparent;border-color:transparent}.segmented button[aria-pressed=true]{background:var(--surface);border-color:var(--line);color:var(--accent)}.channel-settings{border:0;border-top:1px solid var(--line);padding:12px 0 0;margin:16px 0 0;min-width:0}.channel-settings legend{font-size:13px;font-weight:750;padding:0 8px 0 0}.channel-settings select{font-size:13px}.param{margin-top:11px}.param-label{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:5px;font-size:12px}.param-label label{font-weight:650}.param-unit{font-size:10px;color:var(--muted)}.number-control{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;gap:6px}.stepper{padding:0;font-size:12px}.param input[type=range]{width:100%;height:30px;display:block;margin:3px 0 0;background:transparent;accent-color:var(--accent);cursor:pointer;touch-action:pan-y}.param input[type=range]::-webkit-slider-thumb{min-height:19px;min-width:19px}.param input[type=range]:focus-visible{border-radius:10px}.frequency-note{display:block;font-size:11px;color:var(--muted);min-height:17px}.checks{display:grid;grid-template-columns:1fr 1fr;gap:4px 7px;margin-top:12px}.checks label{display:flex;align-items:center;gap:6px;min-height:44px;font-size:12px;cursor:pointer}.mode-note{font-size:11px;line-height:1.7;margin-top:6px;color:var(--muted)}.start-from-settings{display:none;width:100%;margin-top:18px}.mobile-tabs{display:none}.help{margin-top:18px;border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px 16px}.help summary{font-size:13px;font-weight:650;cursor:pointer;min-height:25px}.help-body{font-size:12px;color:var(--muted);padding:12px 0 3px;line-height:1.9}.help-body p+p{margin-top:8px}.help-body ul{padding-left:20px}.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);padding:11px 18px;background:var(--text);color:var(--surface);font-size:13px;max-width:90vw;border-radius:10px;z-index:10;box-shadow:var(--shadow)}.toast:empty{display:none}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.footer{font-size:11px;color:var(--muted);margin-top:20px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.compact .workspace{display:block;max-width:940px;margin:0 auto}.compact .mobile-tabs{display:flex;max-width:940px;margin:0 auto 14px;background:var(--surface);padding:4px;border:1px solid var(--line);border-radius:12px;gap:5px;position:sticky;top:8px;z-index:3}.mobile-tabs button{flex:1;border-color:transparent;background:transparent;font-size:13px;min-height:43px}.mobile-tabs button[aria-selected=true]{color:var(--accent);background:var(--accent-soft)}.compact[data-screen=run] #settingsPanel{display:none}.compact[data-screen=settings] #runPanel{display:none}.compact .settings{max-width:700px;margin:auto;padding:20px}.compact .start-from-settings{display:block}.compact .channel-settings{display:grid;grid-template-columns:1fr 1fr;column-gap:24px}.compact .channel-settings .wave-choice{grid-column:1/-1}.compact .channel-settings .param:last-child{grid-column:1/-1}.compact .channel-settings .param:last-child input[type=range]{max-width:100%}body.wide .workspace{grid-template-columns:minmax(440px,1fr) 350px}body.wide .shell{min-width:880px}
-@media(min-width:1001px){body:not(.compact) .canvas-wrap{width:calc(100% - 28px);max-width:max(440px,calc(100dvh - 350px));margin:0 auto}.settings{max-height:calc(100dvh - 35px);overflow-y:auto;position:sticky;top:16px;scrollbar-width:thin}}
+@media(min-width:1001px){.settings{max-height:calc(100dvh - 35px);overflow-y:auto;position:sticky;top:16px;scrollbar-width:thin}}
 @media(max-width:900px){.shell{padding:17px 18px 24px}.masthead{margin-bottom:16px}.top-options label{display:block}.top-options select{display:block;margin-top:2px}.eyebrow{font-size:9px}h1{font-size:21px}}
 @media(max-width:560px){.shell{padding:12px 9px 24px}.masthead{display:block;margin-bottom:12px}.brand{gap:10px}.brand-icon{width:39px;height:39px;padding:7px;border-radius:11px}h1{font-size:21px}.top-options{margin-top:12px;gap:10px;justify-content:flex-end}.top-options label{display:flex;gap:6px;align-items:center;font-size:11px}.top-options select{margin:0;font-size:12px;min-height:38px}.stage-heading{padding:14px 13px 8px;gap:5px}.stage-heading h2{font-size:14px}.kicker{font-size:9px}.live-pill{font-size:10px;padding:4px 7px}.canvas-wrap{margin:0 4px}.legend{padding:1px 13px 12px;gap:12px;font-size:10px}.transport{padding:11px 12px;gap:6px}.transport button{font-size:12px;padding:8px 9px}.primary{min-width:100px}.transport .time{font-size:12px}.readout{gap:8px;margin-top:10px}.channel-readout{padding:10px 11px}.channel-readout p{font-size:11px}.channel-readout .equation{font-size:12px}.trace-description{padding:9px 12px;font-size:11px}.compact .settings{padding:17px}.compact .channel-settings{display:block}.param{margin-top:14px}.number-control{grid-template-columns:55px minmax(0,1fr) 55px}.param input[type=range]{height:36px}.caption{font-size:11px;padding:9px 3px 0}.footer{font-size:10px}.help{margin-top:12px}.compact .mobile-tabs{top:5px;margin-bottom:10px}.settings{max-height:none;position:static}.toast{bottom:16px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 @media(max-width:560px){.top-options label{flex:1;min-width:0;white-space:nowrap}.top-options select{width:100%;min-width:0;max-width:150px}}
+.stage-actions{display:flex;align-items:center;gap:8px;flex:none}.stage-actions button{font-size:12px;min-height:44px;padding:7px 11px;white-space:nowrap}.graph-tools{display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:0 20px 9px}.graph-tools label{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted)}.graph-tools select{font-size:12px;min-height:44px;padding-top:6px;padding-bottom:6px}.canvas-wrap{max-width:none;overflow-x:auto;overscroll-behavior-x:contain}.graph-tools{flex-wrap:wrap}.graph-tools #graphHint{font-size:10px;color:var(--muted)}.settings-header{margin-bottom:10px}.setting-section{margin-top:12px;padding-top:11px}.setting-section h3{margin-bottom:7px}.mode-note{line-height:1.55}.channel-settings,.compact .channel-settings{display:block;margin-top:12px;padding-top:6px}.param{margin-top:7px}.param-label{margin-bottom:3px;line-height:1.4}.param-inputs{display:grid;grid-template-columns:minmax(60px,1fr) 164px;gap:8px;align-items:center}.param-inputs .number-control{grid-template-columns:44px minmax(0,1fr) 44px;gap:4px}.param-inputs input[type=range]{width:100%;height:44px;margin:0;min-width:0}.param-inputs input[type=number]{min-width:0;padding:5px 3px;font-size:16px;min-height:44px}.param-inputs .stepper{min-width:44px;min-height:44px;font-size:11px}.frequency-note{font-size:10px;min-height:14px;line-height:1.4;margin-top:1px}.channel-advanced,.view-options{margin-top:9px;border:1px solid var(--line);border-radius:10px;background:var(--subtle)}.channel-advanced summary,.view-options summary{cursor:pointer;min-height:44px;padding:10px 11px;font-size:12px;font-weight:650;line-height:1.8}.channel-advanced summary span{font-size:10px;color:var(--muted);font-weight:400;margin-left:7px}.channel-advanced[open],.view-options[open]{padding-bottom:10px}.channel-advanced>div,.view-options>div{margin-left:10px;margin-right:10px}.channel-advanced .wave-choice{margin-top:2px}.channel-advanced .wave-choice select{min-height:44px}.noise-options[hidden]{display:none}.noise-options button{width:100%;font-size:12px;margin-top:7px;min-height:44px}.view-options .checks{margin-top:8px}.start-from-settings{margin-top:12px}
+body.expanded .masthead,body.expanded #settingsPanel,body.expanded .footer,body.expanded .mobile-tabs,body.expanded .readout,body.expanded .caption,body.expanded .tool-links,body.expanded .help{display:none!important}body.expanded #runPanel{display:block!important}body.expanded .shell{max-width:none;min-width:0;padding:8px}body.expanded .workspace{display:block;max-width:none;margin:0;grid-template-columns:1fr}body.expanded .canvas-wrap{max-width:none;width:auto;margin:0 6px}body.expanded .stage-heading{padding:7px 12px 4px}body.expanded .stage-heading h2{font-size:14px}body.expanded .kicker{display:none}body.expanded .graph-tools{padding:0 12px 4px}body.expanded .legend{padding:0 13px 5px}body.expanded .transport{padding:8px 12px}body.expanded .trace-description{min-height:0;padding:5px 12px;font-size:11px}body.expanded #expandView{display:inline-block!important}
+@media(max-width:560px){.stage-heading{align-items:flex-start;flex-wrap:wrap}.stage-actions{margin-left:auto;gap:5px}.stage-actions button{padding:7px 9px}.graph-tools{padding:0 12px 7px}.compact .settings{padding:14px}.param{margin-top:7px}.channel-advanced summary span{font-size:10px}.param-inputs{grid-template-columns:minmax(60px,1fr) 164px;gap:7px}body.expanded .stage-heading{align-items:center}body.expanded .graph-tools label{font-size:10px}}
 @media print{body{background:#fff}.shell{padding:0}.settings,.top-options,.mobile-tabs,.transport,.tool-links,.help,.footer{display:none!important}.workspace{display:block!important}.stage{display:block!important}.panel{box-shadow:none}}
 </style>
 </head>
@@ -28,7 +31,8 @@
   <div class="workspace">
     <section id="runPanel" class="stage" aria-label="実行・観察">
       <div class="panel">
-        <div class="stage-heading"><div><div class="kicker">2つの入力から、1つの軌跡へ</div><h2>合成と入力の対応</h2></div><span class="live-pill"><i class="status-dot" aria-hidden="true"></i><span id="runStatus">準備完了</span></span></div>
+        <div class="stage-heading"><div><div class="kicker">2つの入力から、1つの軌跡へ</div><h2>合成と入力の対応</h2></div><div class="stage-actions"><span class="live-pill"><i class="status-dot" aria-hidden="true"></i><span id="runStatus">準備完了</span></span><button id="expandView" type="button" aria-pressed="false" aria-label="グラフを拡大表示">⤢ 拡大</button></div></div>
+        <div class="graph-tools"><label for="graphSize">グラフの大きさ<select id="graphSize"><option value="fit">画面に合わせる</option><option value="large">大きく</option><option value="max">最大</option></select></label><span id="graphHint">拡大しても時刻と軌跡を保持</span></div>
         <div class="canvas-wrap"><canvas id="scope" role="img" aria-label="左上にXY合成図、左下にX入力と時間の図、右上に時間とY入力の図。点線は同時刻の値を結びます。"></canvas></div>
         <div class="legend"><span><i></i>描いた軌跡</span><span><i class="ref-line"></i>全体の参考線</span><span><i class="point-key"></i>現在の点</span></div>
         <div class="transport"><button id="play" class="primary">▶ 再生</button><button id="step" title="シミュレーション時刻を0.1秒進めます">＋0.1秒</button><button id="reset">最初から</button><span class="time mono" id="timeReadout">t = 0.000 s</span></div>
@@ -38,19 +42,35 @@
       <div class="readout" aria-label="現在のシミュレーション条件"><article class="channel-readout"><h3 class="x-color"><i class="channel-dot" aria-hidden="true"></i>X 入力 <span id="xKindText"></span></h3><p class="equation mono" id="xEquation"></p><p id="xParameters" class="mono"></p><p id="xValue" class="mono"></p></article><article class="channel-readout"><h3 class="y-color"><i class="channel-dot" aria-hidden="true"></i>Y 入力 <span id="yKindText"></span></h3><p class="equation mono" id="yEquation"></p><p id="yParameters" class="mono"></p><p id="yValue" class="mono"></p></article></div>
       <p class="caption">X は下の図と横軸を、Y は右の図と縦軸を共有。点線をたどると、同じ時刻の入力が XY の1点になります。</p>
       <div class="tool-links"><button id="saveImage">図をPNGで保存</button><button id="fitPeriod">時間幅を一周に合わせる</button></div>
-      <details class="help"><summary>見方と操作のヒント</summary><div class="help-body"><p><strong>正弦波</strong>：x(t) = Aₓ sin(ωₓt + φₓ)、y(t) = Aᵧ sin(ωᵧt + φᵧ)。振動数 f = ω / 2π です。X と Y を同じ振動数にして位相差を変えると、直線・楕円・円の違いを観察できます。</p><p><strong>鋸歯状波</strong>：一定速度で増加し、+A から −A へ戻ります。X を鋸歯状波にすると、横方向の掃引と Y 入力の関係が見えます。戻る瞬間の線は描きません。</p><p><strong>一周</strong>：動く2入力の位相が初めて同時に戻る共通周期 T です。振動数比 fₓ : fᵧ = p : q（既約）のとき T = p/fₓ = q/fᵧ。一周モードでは T で停止し、結果を残します。p, q がともに64以下で一致する比を判定します。近い比を無理に閉曲線とは扱いません。</p><p><strong>操作</strong>：数値は入力後に Enter または欄の外を押すと確定します。±0.1 は表示中の単位で増減します。波形・振幅・振動数・位相を変えると t = 0 へ戻ります。速度・時間幅・配色の変更では時刻を維持します。設定画面に移ると一時停止します。</p><p><strong>時間軸</strong>：X 入力では下向き、Y 入力では右向きに時間が進みます。両方とも同じ時間範囲で、目盛りは開始からの秒数です。スペースキーで再生／停止（入力欄の操作中を除く）。別タブに移った間はシミュレーション時間を進めません。</p></div></details>
+      <details class="help"><summary>見方と操作のヒント</summary><div class="help-body"><p><strong>正弦波</strong>：x(t) = Aₓ sin(ωₓt + φₓ)、y(t) = Aᵧ sin(ωᵧt + φᵧ)。振動数 f = ω / 2π です。X と Y を同じ振動数にして位相差を変えると、直線・楕円・円の違いを観察できます。</p><p><strong>鋸歯状波</strong>：一定速度で増加し、+A から −A へ戻ります。X を鋸歯状波にすると、横方向の掃引と Y 入力の関係が見えます。戻る瞬間の線は描きません。</p><p><strong>三角波・矩形波</strong>：三角波は一定の速さで増減し、矩形波は2つの値を交互にとります。正弦波と切り替えて、入力波形の形が XY の軌跡にどう現れるか比較できます。</p><p><strong>ノイズ付き正弦波</strong>：「波形・振幅」を開くと、ノイズ量を調整できます。「ノイズを変える」で別のノイズへ切り替えられます。ノイズが加わると同じ軌跡を周期的に繰り返さなくなるため、一周表示と全体の参考線は利用できません。ノイズ量を 0 にすると正弦波として扱います。</p><p><strong>一周</strong>：動く2入力の位相が初めて同時に戻る共通周期 T です。振動数比 fₓ : fᵧ = p : q（既約）のとき T = p/fₓ = q/fᵧ。一周モードでは T で停止し、結果を残します。p, q がともに64以下で一致する比を判定します。近い比を無理に閉曲線とは扱いません。</p><p><strong>操作</strong>：数値は入力後に Enter または欄の外を押すと確定します。±0.1 は表示中の単位で増減します。波形・振幅・振動数・位相を変えると t = 0 へ戻ります。速度・時間幅・配色の変更では時刻を維持します。設定画面に移ると一時停止します。</p><p><strong>時間軸</strong>：X 入力では下向き、Y 入力では右向きに時間が進みます。両方とも同じ時間範囲で、目盛りは開始からの秒数です。スペースキーで再生／停止（入力欄の操作中を除く）。別タブに移った間はシミュレーション時間を進めません。</p></div></details>
     </section>
     <section id="settingsPanel" class="panel settings" aria-label="条件設定">
       <div class="settings-header"><h2>条件設定</h2><button class="quiet" id="defaults">初期条件へ</button></div>
-      <label class="field-label" for="preset">実験プリセット</label><select id="preset" class="full-width"><option value="threeTwo">リサジュー　3 : 2</option><option value="circle">円　1 : 1 ／ 位相差 π/2</option><option value="line">直線　1 : 1 ／ 同位相</option><option value="twoOne">リサジュー　2 : 1</option><option value="sweep">鋸歯状波の掃引　1 : 3</option><option value="custom" disabled>カスタム条件</option></select>
+      <label class="field-label" for="preset">実験プリセット</label><select id="preset" class="full-width"><option value="threeTwo">リサジュー　3 : 2</option><option value="circle">円　1 : 1 ／ 位相差 π/2</option><option value="line">直線　1 : 1 ／ 同位相</option><option value="twoOne">リサジュー　2 : 1</option><option value="sweep">鋸歯状波の掃引　1 : 3</option><option value="triangleSweep">三角波で往復掃引</option><option value="noise">ノイズ付きの円</option><option value="square">矩形波 1 : 2</option><option value="custom" disabled>カスタム条件</option></select>
       <div class="setting-section"><h3>振動数の入力単位</h3><div class="segmented" role="group" aria-label="振動数の入力単位"><button id="unitOmega" aria-pressed="true">角振動数 ω · rad/s</button><button id="unitHz" aria-pressed="false">振動数 f · Hz</button></div><p class="mode-note">ω = 2πf · 単位を切り替えても波形は変わりません。</p></div>
-      <fieldset class="channel-settings"><legend class="x-color">X 入力 · 横方向</legend><div class="wave-choice"><label class="sr-only" for="kindX">Xの波形</label><select id="kindX" class="full-width"><option value="sin">正弦波 sin</option><option value="saw">鋸歯状波 saw</option></select></div><div id="xControls" class="param-host" style="display:contents"></div></fieldset>
-      <fieldset class="channel-settings"><legend class="y-color">Y 入力 · 縦方向</legend><div class="wave-choice"><label class="sr-only" for="kindY">Yの波形</label><select id="kindY" class="full-width"><option value="sin">正弦波 sin</option><option value="saw">鋸歯状波 saw</option></select></div><div id="yControls" class="param-host" style="display:contents"></div></fieldset>
-      <div class="setting-section"><h3>時間と描画</h3><div id="timeControls"></div><label class="field-label" for="traceMode" style="margin-top:13px">軌跡の表示</label><select id="traceMode" class="full-width"><option value="continuous">連続 · 開始から蓄積</option><option value="window">連続 · 直近の時間窓</option><option value="cycle">一周だけ描いて停止</option></select><p id="cycleNote" class="mode-note"></p><div class="checks"><label><input id="showMarker" type="checkbox" checked>XY の現在点</label><label><input id="showGuides" type="checkbox" checked>対応の点線</label><label><input id="showReference" type="checkbox" checked>全体の参考線</label><label><input id="showGrid" type="checkbox" checked>目盛りとグリッド</label></div></div>
+      <fieldset class="channel-settings"><legend class="x-color">X 入力 · 横方向</legend>
+        <div id="xControls" class="param-host"></div>
+        <details id="xAdvanced" class="channel-advanced"><summary>波形・振幅<span id="xAdvancedSummary">正弦波 / A = 1</span></summary>
+          <div class="wave-choice"><label class="sr-only" for="kindX">Xの波形</label><select id="kindX" class="full-width"><option value="sin">正弦波 sin</option><option value="noisySin">ノイズ付き正弦波</option><option value="saw">鋸歯状波 saw</option><option value="triangle">三角波 triangle</option><option value="square">矩形波 square</option></select></div>
+          <div id="xExtraControls" class="param-host"></div>
+          <div id="xNoiseOptions" class="noise-options" hidden><div id="xNoiseControls" class="param-host"></div><button id="xReseed" type="button">ノイズを変える</button></div>
+        </details>
+      </fieldset>
+      <fieldset class="channel-settings"><legend class="y-color">Y 入力 · 縦方向</legend>
+        <div id="yControls" class="param-host"></div>
+        <details id="yAdvanced" class="channel-advanced"><summary>波形・振幅<span id="yAdvancedSummary">正弦波 / A = 1</span></summary>
+          <div class="wave-choice"><label class="sr-only" for="kindY">Yの波形</label><select id="kindY" class="full-width"><option value="sin">正弦波 sin</option><option value="noisySin">ノイズ付き正弦波</option><option value="saw">鋸歯状波 saw</option><option value="triangle">三角波 triangle</option><option value="square">矩形波 square</option></select></div>
+          <div id="yExtraControls" class="param-host"></div>
+          <div id="yNoiseOptions" class="noise-options" hidden><div id="yNoiseControls" class="param-host"></div><button id="yReseed" type="button">ノイズを変える</button></div>
+        </details>
+      </fieldset>
+      <div class="setting-section"><label class="field-label" for="traceMode">軌跡の表示</label><select id="traceMode" class="full-width"><option value="continuous">連続 · 開始から蓄積</option><option value="window">連続 · 直近の時間窓</option><option value="cycle">一周だけ描いて停止</option></select><p id="cycleNote" class="mode-note"></p>
+        <details id="viewOptions" class="view-options"><summary>時間・表示オプション</summary><div id="timeControls"></div><div class="checks"><label><input id="showMarker" type="checkbox" checked>XY の現在点</label><label><input id="showGuides" type="checkbox" checked>対応の点線</label><label><input id="showReference" type="checkbox" checked>全体の参考線</label><label><input id="showGrid" type="checkbox" checked>目盛りとグリッド</label></div></details>
+      </div>
       <button class="primary start-from-settings" id="applyRun">実行画面で再生 ▶</button>
     </section>
   </div>
-  <footer class="footer"><span>リサジュー・スコープ v5 · オフライン対応</span><span>振幅は任意単位 / 位相は rad</span></footer>
+  <footer class="footer"><span>リサジュー・スコープ v5.1 · オフライン対応</span><span>振幅は任意単位 / 位相は rad</span></footer>
 </main>
 <div id="announcement" class="toast" role="status" aria-live="polite"></div>
 <noscript>このシミュレーターを利用するには、ブラウザーでJavaScriptを有効にしてください。</noscript>
@@ -62,30 +82,56 @@ const ScopeMath = (() => {
   const MAX_RATIO = 64;
   const PHASE_TOLERANCE = 1e-10;
   const EPS = Number.EPSILON;
+  const NOISE_RATE = 40;
+  const KINDS = new Set(['sin','saw','triangle','square','noisySin']);
 
   function valid(c) {
     return c && Number.isFinite(c.amp) && c.amp >= 0 &&
       Number.isFinite(c.omega) && c.omega >= 0 && Number.isFinite(c.phase) &&
-      (c.kind === 'sin' || c.kind === 'saw');
+      KINDS.has(c.kind) && (c.kind !== 'noisySin' ||
+        ((c.noise === undefined || (Number.isFinite(c.noise) && c.noise >= 0 && c.noise <= 1)) &&
+         (c.seed === undefined || Number.isSafeInteger(c.seed))));
   }
+  function noiseAmount(c) { return c.noise === undefined ? 0.2 : c.noise; }
+  function noisy(c) { return c.kind === 'noisySin' && c.amp > 0 && noiseAmount(c) > 0; }
   function moving(c) { return c.amp > 0 && c.omega > 0; }
-  function turns(c, t) { return (c.omega * t + c.phase) / TAU; }
-  function sawBranch(c, t) {
-    const value = turns(c, t) + 0.5;
+  function stableFloor(value) {
     const nearest = Math.round(value);
     // Stabilize an analytically exact reset against floating-point rounding.
     return Math.floor(Math.abs(value - nearest) <= 4 * EPS * Math.max(1, Math.abs(value)) ? nearest : value);
+  }
+  function sawBranch(c, t) { return stableFloor((c.omega * t + c.phase) / TAU + 0.5); }
+  function squareBranch(c, t) { return stableFloor((c.omega * t + c.phase) / Math.PI); }
+  function jumpBranch(c, t) { return c.kind === 'square' ? squareBranch(c,t) : sawBranch(c,t); }
+  function jumps(c) { return moving(c) && (c.kind === 'saw' || c.kind === 'square'); }
+  function randomAt(index, seed) {
+    // Hash the lattice index directly: no mutable PRNG state and no dependency
+    // on animation frames, sample density, or the order of function calls.
+    let bits = (index | 0) ^ Math.imul(Math.floor(index / 4294967296) | 0, 0x9e3779b1) ^ Math.imul(seed | 0, 0x85ebca6b);
+    bits = Math.imul(bits ^ (bits >>> 16), 0x7feb352d);
+    bits = Math.imul(bits ^ (bits >>> 15), 0x846ca68b);
+    bits ^= bits >>> 16;
+    return (bits >>> 0) / 4294967295 * 2 - 1;
+  }
+  function noiseAt(t, seed) {
+    const position = t * NOISE_RATE, index = Math.floor(position), fraction = position - index;
+    const left = randomAt(index,seed), right = randomAt(index+1,seed);
+    return left + (right-left) * fraction;
   }
   function wave(c, t) {
     if (!valid(c) || !Number.isFinite(t)) return NaN;
     if (c.amp === 0) return 0;
     const angle = c.omega * t + c.phase;
     if (c.kind === 'sin') return c.amp * Math.sin(angle);
+    if (c.kind === 'triangle') return c.amp * (2 / Math.PI) * Math.asin(Math.sin(angle));
+    if (c.kind === 'square') return c.amp * (squareBranch(c,t) % 2 === 0 ? 1 : -1);
+    if (c.kind === 'noisySin') return c.amp * (Math.sin(angle) + noiseAmount(c) * noiseAt(t,c.seed === undefined ? 1 : c.seed));
     return c.amp * Math.max(-1, Math.min(1, 2 * (angle / TAU - sawBranch(c, t))));
   }
   function gcd(a, b) { while (b) { const next = a % b; a = b; b = next; } return a; }
   function cycleInfo(x, y) {
     if (!valid(x) || !valid(y)) return {closed:false, period:null, p:null, q:null, reason:'入力値が無効です。'};
+    if (noisy(x) || noisy(y)) return {closed:false, period:null, p:null, q:null, reason:'ノイズ付き入力は共通周期を持つ信号として扱いません。ノイズ量を0にすると正弦波として判定できます。'};
     const mx = moving(x), my = moving(y);
     if (!mx && !my) return {closed:true, period:null, p:null, q:null, reason:'両入力が一定値です。固有の共通周期はありません。'};
     if (!mx || !my) return {closed:true, period:TAU / (mx ? x.omega : y.omega), p:null, q:null, reason:(mx ? 'Y' : 'X') + '入力が一定値のため、変化する入力の周期を用います。'};
@@ -111,50 +157,62 @@ const ScopeMath = (() => {
     if (end === start) return [first];
     const duration = end - start;
     const fastest = Math.max(moving(x) ? x.omega : 0, moving(y) ? y.omega : 0);
-    const intervals = Math.max(1, Math.ceil(duration * fastest / TAU * 128));
-    const sawX = x.kind === 'saw' && moving(x), sawY = y.kind === 'saw' && moving(y);
-    const events = [];
-    let eventCount = 0;
-    for (const [c, key, enabled] of [[x,'x',sawX],[y,'y',sawY]]) {
-      if (!enabled) continue;
-      const firstIndex = sawBranch(c,start) + 1;
-      const lastIndex = sawBranch(c,end);
-      const count = Math.max(0, lastIndex - firstIndex + 1);
-      eventCount += count;
-      // Do not enumerate an unbounded number of events. The fallback below
-      // still detects every skipped reset when deciding whether to connect.
-      if (eventCount * 2 + 2 > limit) break;
-      for (let k = firstIndex; k <= lastIndex; k++) {
-        const time = (TAU * (k - 0.5) - c.phase) / c.omega;
-        if (time > start && time <= end + 8 * EPS * Math.max(1,Math.abs(end))) {
-          events.push({t:Math.min(time,end), key});
-        }
+    const hasNoise = noisy(x) || noisy(y);
+    const intervals = Math.max(1, Math.ceil(duration * Math.max(fastest / TAU * 128, hasNoise ? NOISE_RATE * 2 : 0)));
+    const jumpX = jumps(x), jumpY = jumps(y), descriptors = [];
+    for (const [c, key] of [[x,'x'],[y,'y']]) {
+      if (jumps(c)) {
+        descriptors.push({c,key,jump:true,first:jumpBranch(c,start)+1,last:jumpBranch(c,end),
+          time:k=>(c.kind === 'square' ? Math.PI*k-c.phase : TAU*(k-0.5)-c.phase)/c.omega});
+      } else if (c.kind === 'triangle' && moving(c)) {
+        const cornerBranch=t=>stableFloor((c.omega*t+c.phase-Math.PI/2)/Math.PI);
+        descriptors.push({c,key,jump:false,first:cornerBranch(start)+1,last:cornerBranch(end),time:k=>(Math.PI*(k+0.5)-c.phase)/c.omega});
       }
     }
-    if (eventCount * 2 + 2 > limit) {
+    if (hasNoise) descriptors.push({jump:false,first:stableFloor(start*NOISE_RATE)+1,last:stableFloor(end*NOISE_RATE),time:k=>k/NOISE_RATE});
+    const specialCost = descriptors.reduce((sum,d)=>sum+Math.max(0,d.last-d.first+1)*(d.jump?2:1),0);
+    // Avoid enumerating unbounded intervals. Even with an extremely small
+    // point budget, connect neither saw resets nor square-wave transitions.
+    if (specialCost + 2 > limit) {
       const result = [first];
       const n = Math.min(intervals, limit - 1);
       for (let i = 1; i <= n; i++) {
         const t = i === n ? end : start + duration * i / n;
         const previous = result[result.length - 1];
         result.push({t, x:wave(x,t), y:wave(y,t),
-          cutX:sawX && sawBranch(x,previous.t) !== sawBranch(x,t),
-          cutY:sawY && sawBranch(y,previous.t) !== sawBranch(y,t)});
+          cutX:jumpX && jumpBranch(x,previous.t) !== jumpBranch(x,t),
+          cutY:jumpY && jumpBranch(y,previous.t) !== jumpBranch(y,t)});
       }
       return result;
     }
 
+    const events = [];
+    for (const d of descriptors) {
+      for (let k=d.first;k<=d.last;k++) {
+        const time=d.time(k);
+        if (time<=start || time>end+8*EPS*Math.max(1,Math.abs(end))) continue;
+        const event={t:Math.min(time,end)};
+        if(d.jump){
+          const right=d.c.kind==='square' ? (k%2===0?d.c.amp:-d.c.amp) : -d.c.amp;
+          event[d.key]={left:-right,right};
+        }
+        events.push(event);
+      }
+    }
     events.sort((a,b) => a.t - b.t);
     const merged = [];
     for (const event of events) {
       const previous = merged[merged.length - 1];
       const tolerance = 8 * EPS * Math.max(1,Math.abs(event.t));
-      if (previous && Math.abs(previous.t - event.t) <= tolerance) previous[event.key] = true;
-      else merged.push({t:event.t, x:event.key === 'x', y:event.key === 'y'});
+      if (previous && Math.abs(previous.t - event.t) <= tolerance) {
+        if(event.x) previous.x=event.x;
+        if(event.y) previous.y=event.y;
+      } else merged.push(event);
     }
     // Reserve two vertices for each discontinuity before choosing regular
     // points. Thus downsampling can never discard a discontinuity marker.
-    const n = Math.min(intervals, Math.max(1, limit - 1 - 2 * merged.length));
+    const reserved = merged.reduce((sum,event)=>sum+(event.x||event.y?2:1),0);
+    const n = Math.min(intervals, Math.max(1, limit - 1 - reserved));
     const result = [first];
     let eventIndex = 0;
     for (let i = 1; i <= n; i++) {
@@ -162,10 +220,11 @@ const ScopeMath = (() => {
       while (eventIndex < merged.length && merged[eventIndex].t <= t) {
         const event = merged[eventIndex++];
         const actualX = wave(x,event.t), actualY = wave(y,event.t);
-        // At a reset, left and right limits share the exact event time.
-        // The non-resetting channel remains continuous through both vertices.
-        result.push({t:event.t, x:event.x ? x.amp : actualX, y:event.y ? y.amp : actualY, cutX:false, cutY:false});
-        result.push({t:event.t, x:event.x ? -x.amp : actualX, y:event.y ? -y.amp : actualY, cutX:event.x, cutY:event.y});
+        // At a jump, left and right limits share the exact event time.
+        // Other channels remain continuous; noise knots/triangle corners need
+        // only one regular vertex and never acquire a discontinuity flag.
+        if(event.x||event.y) result.push({t:event.t, x:event.x ? event.x.left : actualX, y:event.y ? event.y.left : actualY, cutX:false, cutY:false});
+        result.push({t:event.t, x:event.x ? event.x.right : actualX, y:event.y ? event.y.right : actualY, cutX:Boolean(event.x), cutY:Boolean(event.y)});
       }
       const previous = result[result.length - 1];
       const nextEvent = merged[eventIndex];
@@ -187,14 +246,18 @@ const ScopeMath = (() => {
   const pretty = (v, digits=3) => Math.abs(v) < 1e-10 ? '0' : Number(v.toFixed(digits)).toString();
   const precise = v => Number(v.toPrecision(13)).toString();
   const clone = value => JSON.parse(JSON.stringify(value));
-  const initial = {x:{amp:1,omega:3,phase:0,kind:'sin'},y:{amp:1,omega:2,phase:0,kind:'sin'},speed:1,win:16};
-  const state = {...clone(initial),unit:'omega',mode:'continuous',t:0,running:false,completed:false,screen:'run',theme:'light',layout:'auto'};
+  const initial = {x:{amp:1,omega:3,phase:0,kind:'sin',noise:.2,seed:173},y:{amp:1,omega:2,phase:0,kind:'sin',noise:.2,seed:1021},speed:1,win:16};
+  const state = {...clone(initial),unit:'omega',mode:'continuous',t:0,running:false,completed:false,screen:'run',theme:'light',layout:'auto',expanded:false,graphSize:'fit'};
+  const names={sin:'正弦波',saw:'鋸歯状波',triangle:'三角波',square:'矩形波',noisySin:'ノイズ付き正弦波'};
+  const hasNoise=c=>c.kind==='noisySin'&&c.noise>0&&c.amp>0;
+  const peak=c=>c.amp*(c.kind==='noisySin'?1+c.noise:1);
+  const constant=c=>c.amp===0||(c.omega===0&&!hasNoise(c));
   const canvas = $('scope'), ctx = canvas.getContext('2d');
   // Fixed-size ink layer keeps the complete accumulated trace without an ever-growing history array.
   const ink = document.createElement('canvas'); ink.width=ink.height=1200;
   const inkCtx = ink.getContext('2d');
   let geometry=null, colors={}, cycle=null, reference=[], lastTimestamp=null, frameId=null;
-  let toastTimer, lastReadout=0, range=1.12;
+  let toastTimer, lastReadout=0, range=1.12, previousScroll={x:0,y:0};
   const darkPreference = matchMedia('(prefers-color-scheme: dark)');
   const compactPreference = matchMedia('(max-width: 1000px)');
   function notify(message) {
@@ -226,16 +289,27 @@ const ScopeMath = (() => {
     for(const id of ['run','settings']){const button=$(id+'Tab');button.setAttribute('aria-selected',String(state.screen===id));button.tabIndex=state.screen===id?0:-1;}
   }
   function switchScreen(screen){
+    if(screen==='settings'&&state.expanded)setExpanded(false);
     if(screen==='settings')pause();
     state.screen=screen;document.body.dataset.screen=screen;updateTabs();resize();
   }
+  function setExpanded(expanded){
+    if(expanded===state.expanded)return;
+    if(expanded){previousScroll={x:scrollX,y:scrollY};state.screen='run';document.body.dataset.screen='run';updateTabs();}
+    state.expanded=expanded;document.body.classList.toggle('expanded',expanded);
+    $('expandView').setAttribute('aria-pressed',String(expanded));$('expandView').setAttribute('aria-label',expanded?'グラフを元の表示に戻す':'グラフを拡大表示');$('expandView').textContent=expanded?'↙ 元の表示':'⤢ 拡大';
+    if(expanded)window.scrollTo(0,0);resize();
+    if(!expanded)window.scrollTo(previousScroll.x,previousScroll.y);
+  }
   const definitions = [
-    {id:'Ax',channel:'x',key:'amp',label:'振幅 Aₓ',unit:'任意単位',min:0,max:5,host:'xControls'},
+    {id:'Ax',channel:'x',key:'amp',label:'振幅 Aₓ',unit:'任意単位',min:0,max:5,host:'xExtraControls'},
     {id:'wx',channel:'x',key:'omega',label:'角振動数 ωₓ',unit:'rad/s',min:0,max:20,host:'xControls'},
     {id:'phx',channel:'x',key:'phase',label:'位相 φₓ',unit:'rad',min:0,max:TAU,host:'xControls'},
-    {id:'Ay',channel:'y',key:'amp',label:'振幅 Aᵧ',unit:'任意単位',min:0,max:5,host:'yControls'},
+    {id:'Ay',channel:'y',key:'amp',label:'振幅 Aᵧ',unit:'任意単位',min:0,max:5,host:'yExtraControls'},
     {id:'wy',channel:'y',key:'omega',label:'角振動数 ωᵧ',unit:'rad/s',min:0,max:20,host:'yControls'},
     {id:'phy',channel:'y',key:'phase',label:'位相 φᵧ',unit:'rad',min:0,max:TAU,host:'yControls'},
+    {id:'noiseX',channel:'x',key:'noise',label:'ノイズ量 Nₓ',unit:'× Aₓ',min:0,max:1,host:'xNoiseControls'},
+    {id:'noiseY',channel:'y',key:'noise',label:'ノイズ量 Nᵧ',unit:'× Aᵧ',min:0,max:1,host:'yNoiseControls'},
     {id:'speed',key:'speed',label:'再生速度',unit:'倍',min:.1,max:5,host:'timeControls'},
     {id:'win',key:'win',label:'時間グラフの表示幅',unit:'s',min:1,max:60,host:'timeControls'}
   ];
@@ -269,7 +343,7 @@ const ScopeMath = (() => {
   function buildControls(){
     definitions.forEach(d=>{
       const block=document.createElement('div');block.className='param';
-      block.innerHTML=`<div class="param-label"><label id="${d.id}Label" for="${d.id}"></label><span id="${d.id}Unit" class="param-unit"></span></div><div class="number-control"><button class="stepper" id="${d.id}_minus" type="button">−0.1</button><input id="${d.id}" type="number" step="any" inputmode="decimal" aria-describedby="${d.id}Unit${d.key==='omega'?' '+d.id+'Note':''}"><button class="stepper" id="${d.id}_plus" type="button">＋0.1</button></div><input type="range" step="any" id="${d.id}_s">${d.key==='omega'?`<span id="${d.id}Note" class="frequency-note mono"></span>`:''}`;
+      block.innerHTML=`<div class="param-label"><label id="${d.id}Label" for="${d.id}"></label><span id="${d.id}Unit" class="param-unit"></span></div><div class="param-inputs"><input type="range" step="any" id="${d.id}_s"><div class="number-control"><button class="stepper" id="${d.id}_minus" type="button">−0.1</button><input id="${d.id}" type="number" step="any" inputmode="decimal" aria-describedby="${d.id}Unit${d.key==='omega'?' '+d.id+'Note':''}"><button class="stepper" id="${d.id}_plus" type="button">＋0.1</button></div></div>${d.key==='omega'?`<span id="${d.id}Note" class="frequency-note mono"></span>`:''}`;
       $(d.host).appendChild(block);
       $(d.id).addEventListener('change',e=>setParameter(d,e.target.value));
       $(d.id).addEventListener('keydown',e=>{if(e.key==='Enter')e.target.blur();if(e.key==='Escape'){syncControl(d);e.target.blur();}});
@@ -281,14 +355,15 @@ const ScopeMath = (() => {
   }
   function setUnit(unit){state.unit=unit;$('unitOmega').setAttribute('aria-pressed',String(unit==='omega'));$('unitHz').setAttribute('aria-pressed',String(unit==='hz'));definitions.filter(d=>d.key==='omega').forEach(syncControl);}
   function recompute(){
-    range=1.12*Math.max(1,state.x.amp,state.y.amp);
+    range=1.12*Math.max(1,peak(state.x),peak(state.y));
     cycle=cycleInfo(state.x,state.y);
     const available=cycle.closed&&Number.isFinite(cycle.period)&&cycle.period>0;
     reference=available?sample(state.x,state.y,0,cycle.period,18000):[];
     $('traceMode').querySelector('[value=cycle]').disabled=!available;
     $('fitPeriod').disabled=!available;
     if(state.mode==='cycle'&&!available){state.mode='continuous';$('traceMode').value=state.mode;notify('この条件では一周を判定できないため、連続表示に切り替えました。');}
-    $('cycleNote').textContent=available?'共通周期 T = '+pretty(cycle.period,5)+' s。一周モードはこの時刻で停止します。':(state.x.omega===0||state.x.amp===0)&&(state.y.omega===0||state.y.amp===0)?'両入力が一定値のため、軌跡は点になります。':'64以下の整数比で共通周期を判定できません。一周表示と全体の参考線は無効です。';
+    $('cycleNote').textContent=available?'共通周期 T = '+pretty(cycle.period,5)+' s。一周モードはこの時刻で停止します。':hasNoise(state.x)||hasNoise(state.y)?'ノイズを含む波形は繰り返さないため、一周表示と全体の参考線は無効です。':constant(state.x)&&constant(state.y)?'両入力が一定値のため、軌跡は点になります。':'64以下の整数比で共通周期を判定できません。一周表示と全体の参考線は無効です。';
+    $('showReference').disabled=!available;
     updateConditions();
   }
   function strokeSamples(context,points,mapX,mapY,color,width,which='xy'){
@@ -343,8 +418,11 @@ const ScopeMath = (() => {
   }
   function updateConditions(){
     for(const c of ['x','y']){
-      const v=state[c];$(c+'KindText').textContent=v.kind==='sin'?'正弦波':'鋸歯状波';
-      $(c+'Equation').textContent=c+'(t) = '+pretty(v.amp)+' '+(v.kind==='sin'?'sin':'saw')+'('+pretty(v.omega)+'t + '+pretty(v.phase)+')';
+      const v=state[c];$(c+'KindText').textContent=names[v.kind];
+      $(c+'AdvancedSummary').textContent=names[v.kind]+' · A = '+pretty(v.amp)+(v.kind==='noisySin'?' · N = '+pretty(v.noise):'');
+      $(c+'NoiseOptions').hidden=v.kind!=='noisySin';
+      const functionName={sin:'sin',noisySin:'sin',saw:'saw',triangle:'tri',square:'square'}[v.kind];
+      $(c+'Equation').textContent=c+'(t) = '+pretty(v.amp)+' '+functionName+'('+pretty(v.omega)+'t + '+pretty(v.phase)+')'+(v.kind==='noisySin'?' + '+pretty(v.amp*v.noise)+' η'+c+'(t)':'');
       $(c+'Parameters').textContent='ω = '+pretty(v.omega,6)+' rad/s\nf = '+pretty(v.omega/TAU,6)+' Hz\nφ = '+pretty(v.phase,6)+' rad';
       $(c+'Parameters').style.whiteSpace='pre-line';
     }
@@ -361,13 +439,26 @@ const ScopeMath = (() => {
     $('progressFill').style.width=percent+'%';$('progress').setAttribute('aria-valuenow',String(Math.round(percent)));
   }
   function resize(){
-    const w=canvas.parentElement.clientWidth;
-    if(w<50)return;
-    const small=w<500,left=small?27:38,top=small?29:36,gap=small?32:45,right=small?13:18,bottom=small?23:30;
-    const available=w-left-right-gap,side=available*.70,timeWidth=available*.30,timeHeight=side*(small?.49:.37);
-    const h=top+side+gap+timeHeight+bottom;
-    geometry={w,h,left,top,side,gap,right,timeWidth,timeHeight,small,ytX:left+side+gap,xtY:top+side+gap};
-    const dpr=Math.min(devicePixelRatio||1,2.5);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);canvas.style.height=h+'px';
+    const viewportWidth=canvas.parentElement.clientWidth;
+    if(viewportWidth<50||!$('runPanel').getClientRects().length)return;
+    const factor={fit:1,large:1.3,max:1.7}[state.graphSize];
+    // On phones, only the graph surface pans; controls and the page retain their width.
+    const w=viewportWidth<600?Math.round(viewportWidth*factor):viewportWidth;
+    const small=w<500,left=small?29:40,top=small?28:34,gap=small?30:36,verticalGap=small?46:42,right=small?14:20,bottom=small?24:28;
+    const timeRatio=small?.40:.28,available=w-left-right-gap;
+    const panel=$('runPanel').querySelector('.panel');
+    const controlsHeight=['.legend','.transport','.progress-track','.trace-description'].reduce((n,selector)=>n+(panel.querySelector(selector)?.getBoundingClientRect().height||0),0);
+    const topOffset=canvas.parentElement.getBoundingClientRect().top+scrollY;
+    const fitHeight=Math.max(260,innerHeight-topOffset-controlsHeight-22);
+    const sideByHeight=Math.max(130,(fitHeight-top-verticalGap-bottom)/(1+timeRatio));
+    const sideByWidth=available*(state.expanded?.77:.72);
+    const side=Math.min(sideByWidth,sideByHeight*factor);
+    const timeWidth=available-side,timeHeight=side*timeRatio;
+    const h=top+side+verticalGap+timeHeight+bottom;
+    geometry={w,h,left,top,side,gap,verticalGap,right,timeWidth,timeHeight,small,viewportWidth,ytX:left+side+gap,xtY:top+side+verticalGap};
+    const dpr=Math.min(devicePixelRatio||1,2.5);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);canvas.style.width=w+'px';canvas.style.height=h+'px';
+    $('graphHint').textContent=w>viewportWidth+1?'図の中を左右にスクロールできます':state.expanded?'「元の表示」または Esc で戻れます':'拡大しても時刻と軌跡を保持';
+    if(w<=viewportWidth+1)canvas.parentElement.scrollLeft=0;
     ctx.setTransform(dpr,0,0,dpr,0,0);draw();
   }
   function text(str,x,y,{color=colors.muted,size=12,align='left',weight=400,maxWidth}={}){
@@ -390,7 +481,7 @@ const ScopeMath = (() => {
     text('Y 入力',YX,T-12,{size:heading,color:colors.y,weight:700});
     text('X 入力 · t↓',L,XY-12,{size:heading,color:colors.x,weight:700});
     if($('showGrid').checked){
-      const amplitude=Math.max(1,state.x.amp,state.y.amp);
+      const amplitude=Math.max(1,peak(state.x),peak(state.y));
       for(const value of [-amplitude,-amplitude/2,0,amplitude/2,amplitude]){
         const x=sx(value),y=sy(value),axis=value===0;
         line(x,T,x,T+S,axis?colors.axis:colors.grid,axis?1.2:.8);line(L,y,L+S,y,axis?colors.axis:colors.grid,axis?1.2:.8);
@@ -404,8 +495,8 @@ const ScopeMath = (() => {
         text(pretty(time,1),L-6,y+3,{size:fs,align:'right'});
       }
     }
-    text('x',L+S-2,T+S+14,{size:fs,color:colors.x,align:'right'});
-    text('y',L-8,T+8,{size:fs,color:colors.y,align:'right'});
+    text('x',L+S+8,T+S+14,{size:fs,color:colors.x,align:'left'});
+    text('y',L-8,T-3,{size:fs,color:colors.y,align:'right'});
     text(small?'t (s) →':'t (s) →',YX+TW,T+S+28,{size:fs,align:'right'});
     ctx.save();ctx.translate(small?9:12,XY+TH/2);ctx.rotate(-Math.PI/2);text('t (s)',0,0,{size:fs,align:'center'});ctx.restore();
     if($('showReference').checked&&reference.length){
@@ -432,10 +523,10 @@ const ScopeMath = (() => {
     // The unused lower-right quadrant holds the shared simulation conditions.
     const ix=YX,iy=XY+(small?1:3);
     text(small?'振動数比':'現在の条件 / fₓ : fᵧ',ix,iy+10,{size:small?10:11});
-    const ratio=state.y.omega===0?(state.x.omega===0?'一定値':'Y = 一定'):cycle?.p&&cycle?.q?cycle.p+' : '+cycle.q:pretty(state.x.omega/state.y.omega,3)+' : 1';
+    const ratio=state.y.omega===0?(state.x.omega===0?'ωₓ = ωᵧ = 0':'ωᵧ = 0'):cycle?.p&&cycle?.q?cycle.p+' : '+cycle.q:pretty(state.x.omega/state.y.omega,3)+' : 1';
     text(ratio,ix,iy+(small?32:42),{size:small?19:Math.min(29,TW*.15),color:colors.text,weight:700,maxWidth:TW});
     const periodic=cycle?.period>0&&cycle.closed;
-    text(periodic?'T = '+pretty(cycle.period,3)+' s':'T : '+((!state.x.omega||!state.x.amp)&&(!state.y.omega||!state.y.amp)?'一定値':'判定外'),ix,iy+(small?52:66),{size:small?10:12,maxWidth:TW});
+    text(periodic?'T = '+pretty(cycle.period,3)+' s':hasNoise(state.x)||hasNoise(state.y)?'ノイズあり / 非周期':'T : '+(constant(state.x)&&constant(state.y)?'一定値':'判定外'),ix,iy+(small?52:66),{size:small?10:12,maxWidth:TW});
     if(TH>85)text((state.mode==='cycle'?'一周':'連続')+' · '+pretty(state.speed,1)+'×',ix,iy+(small?72:89),{size:small?10:12});
     if(!small&&TH>135){text('ωₓ '+pretty(state.x.omega)+' / ωᵧ '+pretty(state.y.omega),ix,iy+114,{size:11});text('φₓ '+pretty(state.x.phase)+' / φᵧ '+pretty(state.y.phase),ix,iy+132,{size:11});}
     const now=performance.now();if(!state.running||now-lastReadout>70){updateDynamicReadout();lastReadout=now;}
@@ -447,6 +538,9 @@ const ScopeMath = (() => {
     if(name==='line'){state.x.omega=state.y.omega=2;}
     if(name==='twoOne'){state.x.omega=4;state.y.omega=2;}
     if(name==='sweep'){state.x.kind='saw';state.x.omega=2;state.y.omega=6;}
+    if(name==='triangleSweep'){state.x.kind='triangle';state.x.omega=2;state.y.omega=6;}
+    if(name==='noise'){state.x.kind=state.y.kind='noisySin';state.x.omega=state.y.omega=2;state.y.phase=Math.PI/2;}
+    if(name==='square'){state.x.kind='square';state.x.omega=2;state.y.omega=4;}
     $('preset').value=name;$('kindX').value=state.x.kind;$('kindY').value=state.y.kind;
     definitions.forEach(syncControl);recompute();reset();
   }
@@ -456,7 +550,7 @@ const ScopeMath = (() => {
     const c=output.getContext('2d');c.scale(scale,scale);c.fillStyle=colors.surface;c.fillRect(0,0,outWidth,graphHeight+130);c.drawImage(canvas,0,40,outWidth,graphHeight);
     c.fillStyle=colors.text;c.font='bold 16px Meiryo, sans-serif';c.fillText('リサジュー・スコープ',14,25);c.font='12px Meiryo, sans-serif';
     c.fillText('t = '+state.t.toFixed(3)+' s / '+$('traceMode').selectedOptions[0].textContent,14,graphHeight+60);
-    for(const [i,k] of ['x','y'].entries()){const v=state[k];c.fillStyle=colors[k];c.fillText(k.toUpperCase()+' '+v.kind+' : A='+pretty(v.amp)+'  ω='+pretty(v.omega,4)+' rad/s  φ='+pretty(v.phase,4)+' rad',14,graphHeight+82+i*20);}
+    for(const [i,k] of ['x','y'].entries()){const v=state[k];c.fillStyle=colors[k];c.fillText(k.toUpperCase()+' '+names[v.kind]+' : A='+pretty(v.amp)+'  ω='+pretty(v.omega,4)+' rad/s  φ='+pretty(v.phase,4)+' rad'+(v.kind==='noisySin'?'  N='+pretty(v.noise)+' × A':''),14,graphHeight+82+i*20);}
     const link=document.createElement('a');link.download='lissajous-'+state.t.toFixed(3)+'s.png';link.href=output.toDataURL('image/png');link.click();
   }
   buildControls();
@@ -470,21 +564,32 @@ const ScopeMath = (() => {
   $('step').addEventListener('click',()=>{pause();advance(.1);updateTransport();draw();});
   $('preset').addEventListener('change',e=>applyPreset(e.target.value));
   for(const c of ['x','y'])$('kind'+c.toUpperCase()).addEventListener('change',e=>{state[c].kind=e.target.value;$('preset').value='custom';recompute();reset(false);});
+  for(const c of ['x','y'])$(c+'Reseed').addEventListener('click',()=>{
+    // The explicit button chooses a new realization; ordinary renders never consume random values.
+    state[c].seed=(state[c].seed+104729)>>>0;$('preset').value='custom';reset();
+    notify(c.toUpperCase()+' のノイズを変更し、t = 0 に戻しました。');
+  });
+  $('expandView').addEventListener('click',()=>setExpanded(!state.expanded));
+  $('graphSize').addEventListener('change',e=>{state.graphSize=e.target.value;savePreference('graphSize',state.graphSize);resize();});
   $('traceMode').addEventListener('change',e=>{state.mode=e.target.value;reset();updateConditions();});
   for(const id of ['showMarker','showGuides','showReference','showGrid'])$(id).addEventListener('change',draw);
   $('defaults').addEventListener('click',()=>{state.speed=initial.speed;state.win=initial.win;state.mode='continuous';$('traceMode').value=state.mode;setUnit('omega');for(const id of ['showMarker','showGuides','showReference','showGrid'])$(id).checked=true;applyPreset('threeTwo');notify('初期条件に戻しました。');});
   $('fitPeriod').addEventListener('click',()=>{if(cycle?.period){state.win=clamp(cycle.period,1,60);syncControl(definitions.find(d=>d.key==='win'));updateConditions();draw();if(cycle.period<1||cycle.period>60)notify('表示幅の範囲（1～60秒）に調整しました。');}});
   $('saveImage').addEventListener('click',saveImage);
-  document.addEventListener('keydown',e=>{if(e.code==='Space'&&!e.repeat&&!['INPUT','SELECT','TEXTAREA','BUTTON','SUMMARY'].includes(e.target.tagName)&&state.screen==='run'){e.preventDefault();state.running?pause():play();}});
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'&&state.expanded){setExpanded(false);$('expandView').focus();return;}
+    if(e.code==='Space'&&!e.repeat&&!['INPUT','SELECT','TEXTAREA','BUTTON','SUMMARY'].includes(e.target.tagName)&&state.screen==='run'){e.preventDefault();state.running?pause():play();}
+  });
   document.addEventListener('visibilitychange',()=>{lastTimestamp=null;if(document.hidden){if(frameId!==null){cancelAnimationFrame(frameId);frameId=null;}}else if(state.running&&frameId===null){frameId=requestAnimationFrame(tick);}});
   darkPreference.addEventListener('change',()=>{if(state.theme==='auto')setTheme('auto');});compactPreference.addEventListener('change',()=>{if(state.layout==='auto')setLayout('auto');});
   new ResizeObserver(resize).observe(canvas.parentElement);
   window.addEventListener('resize',resize);
-  const storedTheme=readPreference('theme','light'),storedLayout=readPreference('layout','auto');
+  const storedTheme=readPreference('theme','light'),storedLayout=readPreference('layout','auto'),storedSize=readPreference('graphSize','fit');
+  state.graphSize=['fit','large','max'].includes(storedSize)?storedSize:'fit';$('graphSize').value=state.graphSize;
   setTheme(['light','dark','auto'].includes(storedTheme)?storedTheme:'light');
   recompute();setLayout(['auto','compact','wide'].includes(storedLayout)?storedLayout:'auto');reset();
   // Read-only diagnostics support repeatable local verification without production dependencies.
-  window.ScopeDiagnostics=Object.freeze({snapshot:()=>clone({x:state.x,y:state.y,speed:state.speed,win:state.win,t:state.t,running:state.running,completed:state.completed,mode:state.mode,unit:state.unit,cycle,geometry,inkSize:ink.width}),sample:(a,b)=>sample(state.x,state.y,a,b,24000)});
+  window.ScopeDiagnostics=Object.freeze({snapshot:()=>clone({x:state.x,y:state.y,speed:state.speed,win:state.win,t:state.t,running:state.running,completed:state.completed,mode:state.mode,unit:state.unit,expanded:state.expanded,graphSize:state.graphSize,range,cycle,geometry,inkSize:ink.width}),sample:(a,b)=>sample(state.x,state.y,a,b,24000)});
 })();
 
 </script>
