@@ -70,7 +70,7 @@ body.expanded .masthead,body.expanded #settingsPanel,body.expanded .footer,body.
       <button class="primary start-from-settings" id="applyRun">実行画面で再生 ▶</button>
     </section>
   </div>
-  <footer class="footer"><span>リサジュー・スコープ v5.1 · オフライン対応</span><span>振幅は任意単位 / 位相は rad</span></footer>
+  <footer class="footer"><span>リサジュー・スコープ v5.1.1 · オフライン対応</span><span>振幅は任意単位 / 位相は rad</span></footer>
 </main>
 <div id="announcement" class="toast" role="status" aria-live="polite"></div>
 <noscript>このシミュレーターを利用するには、ブラウザーでJavaScriptを有効にしてください。</noscript>
@@ -444,16 +444,19 @@ const ScopeMath = (() => {
     const factor={fit:1,large:1.3,max:1.7}[state.graphSize];
     // On phones, only the graph surface pans; controls and the page retain their width.
     const w=viewportWidth<600?Math.round(viewportWidth*factor):viewportWidth;
-    const small=w<500,left=small?29:40,top=small?28:34,gap=small?30:36,verticalGap=small?46:42,right=small?14:20,bottom=small?24:28;
-    const timeRatio=small?.40:.28,available=w-left-right-gap;
+    const small=w<500,baseLeft=small?29:40,top=small?28:34,gap=small?30:36,verticalGap=small?46:42,right=small?14:20,bottom=small?24:28;
+    // Both input plots are the same rectangle, rotated by 90 degrees.
+    // Keep this ratio fixed across sizes, breakpoints, and expanded mode.
+    const timeRatio=.40,available=w-baseLeft-right-gap;
     const panel=$('runPanel').querySelector('.panel');
     const controlsHeight=['.legend','.transport','.progress-track','.trace-description'].reduce((n,selector)=>n+(panel.querySelector(selector)?.getBoundingClientRect().height||0),0);
     const topOffset=canvas.parentElement.getBoundingClientRect().top+scrollY;
     const fitHeight=Math.max(260,innerHeight-topOffset-controlsHeight-22);
     const sideByHeight=Math.max(130,(fitHeight-top-verticalGap-bottom)/(1+timeRatio));
-    const sideByWidth=available*(state.expanded?.77:.72);
+    const sideByWidth=available/(1+timeRatio);
     const side=Math.min(sideByWidth,sideByHeight*factor);
-    const timeWidth=available-side,timeHeight=side*timeRatio;
+    const timeWidth=side*timeRatio,timeHeight=timeWidth;
+    const left=baseLeft+Math.max(0,available-side-timeWidth)/2;
     const h=top+side+verticalGap+timeHeight+bottom;
     geometry={w,h,left,top,side,gap,verticalGap,right,timeWidth,timeHeight,small,viewportWidth,ytX:left+side+gap,xtY:top+side+verticalGap};
     const dpr=Math.min(devicePixelRatio||1,2.5);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);canvas.style.width=w+'px';canvas.style.height=h+'px';
@@ -498,7 +501,7 @@ const ScopeMath = (() => {
     text('x',L+S+8,T+S+14,{size:fs,color:colors.x,align:'left'});
     text('y',L-8,T-3,{size:fs,color:colors.y,align:'right'});
     text(small?'t (s) →':'t (s) →',YX+TW,T+S+28,{size:fs,align:'right'});
-    ctx.save();ctx.translate(small?9:12,XY+TH/2);ctx.rotate(-Math.PI/2);text('t (s)',0,0,{size:fs,align:'center'});ctx.restore();
+    ctx.save();ctx.translate(L-(small?20:28),XY+TH/2);ctx.rotate(-Math.PI/2);text('t (s)',0,0,{size:fs,align:'center'});ctx.restore();
     if($('showReference').checked&&reference.length){
       clip(L,T,S,S,()=>strokeSamples(ctx,reference,p=>sx(p.x),p=>sy(p.y),colors.ref,1.2));
     }
@@ -521,14 +524,14 @@ const ScopeMath = (() => {
       point(px,py,colors.trace,small?5:6);
     }
     // The unused lower-right quadrant holds the shared simulation conditions.
-    const ix=YX,iy=XY+(small?1:3);
-    text(small?'振動数比':'現在の条件 / fₓ : fᵧ',ix,iy+10,{size:small?10:11});
+    const compactInfo=small||TW<140,ix=YX,iy=XY+(compactInfo?1:3);
+    text(compactInfo?'振動数比':'現在の条件 / fₓ : fᵧ',ix,iy+10,{size:compactInfo?10:11,maxWidth:TW});
     const ratio=state.y.omega===0?(state.x.omega===0?'ωₓ = ωᵧ = 0':'ωᵧ = 0'):cycle?.p&&cycle?.q?cycle.p+' : '+cycle.q:pretty(state.x.omega/state.y.omega,3)+' : 1';
-    text(ratio,ix,iy+(small?32:42),{size:small?19:Math.min(29,TW*.15),color:colors.text,weight:700,maxWidth:TW});
+    text(ratio,ix,iy+(compactInfo?32:42),{size:compactInfo?19:Math.min(29,TW*.15),color:colors.text,weight:700,maxWidth:TW});
     const periodic=cycle?.period>0&&cycle.closed;
-    text(periodic?'T = '+pretty(cycle.period,3)+' s':hasNoise(state.x)||hasNoise(state.y)?'ノイズあり / 非周期':'T : '+(constant(state.x)&&constant(state.y)?'一定値':'判定外'),ix,iy+(small?52:66),{size:small?10:12,maxWidth:TW});
-    if(TH>85)text((state.mode==='cycle'?'一周':'連続')+' · '+pretty(state.speed,1)+'×',ix,iy+(small?72:89),{size:small?10:12});
-    if(!small&&TH>135){text('ωₓ '+pretty(state.x.omega)+' / ωᵧ '+pretty(state.y.omega),ix,iy+114,{size:11});text('φₓ '+pretty(state.x.phase)+' / φᵧ '+pretty(state.y.phase),ix,iy+132,{size:11});}
+    text(periodic?'T = '+pretty(cycle.period,3)+' s':hasNoise(state.x)||hasNoise(state.y)?(compactInfo?'非周期':'ノイズあり / 非周期'):'T : '+(constant(state.x)&&constant(state.y)?'一定値':'判定外'),ix,iy+(compactInfo?52:66),{size:compactInfo?10:12,maxWidth:TW});
+    if(TH>85)text((state.mode==='cycle'?'一周':'連続')+' · '+pretty(state.speed,1)+'×',ix,iy+(compactInfo?72:89),{size:compactInfo?10:12,maxWidth:TW});
+    if(!compactInfo&&TH>135){text('ωₓ '+pretty(state.x.omega)+' / ωᵧ '+pretty(state.y.omega),ix,iy+114,{size:11,maxWidth:TW});text('φₓ '+pretty(state.x.phase)+' / φᵧ '+pretty(state.y.phase),ix,iy+132,{size:11,maxWidth:TW});}
     const now=performance.now();if(!state.running||now-lastReadout>70){updateDynamicReadout();lastReadout=now;}
   }
   function applyPreset(name){
