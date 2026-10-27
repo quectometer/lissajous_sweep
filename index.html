@@ -20,14 +20,17 @@ body.expanded .masthead,body.expanded #settingsPanel,body.expanded .footer,body.
 @media(max-width:560px){.stage-heading{align-items:flex-start;flex-wrap:wrap}.stage-actions{margin-left:auto;gap:5px}.stage-actions button{padding:7px 9px}.graph-tools{padding:0 12px 7px}.compact .settings{padding:14px}.param{margin-top:7px}.channel-advanced summary span{font-size:10px}.param-inputs{grid-template-columns:minmax(60px,1fr) 164px;gap:7px}body.expanded .stage-heading{align-items:center}body.expanded .graph-tools label{font-size:10px}}
 .plot-toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;padding:0 20px 12px}.plot-toolbar .transport{flex:1 1 auto;padding:0;border:0;background:transparent;gap:7px}.plot-toolbar .transport button{font-size:13px;white-space:nowrap}.plot-toolbar .graph-tools{flex:0 1 auto;padding:0}.toolbar-status{flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 12px;color:var(--muted)}.toolbar-status .time{font-size:13px;white-space:nowrap}.toolbar-status #graphHint{font-size:10px}body.expanded .plot-toolbar{padding:0 12px 8px}body.expanded .plot-toolbar .transport,body.expanded .plot-toolbar .graph-tools{padding:0}
 @media(max-width:560px){.plot-toolbar{padding:0 12px 10px;gap:7px}.plot-toolbar .transport{gap:6px}.plot-toolbar .transport button{font-size:12px}.plot-toolbar .graph-tools{margin-left:auto}.toolbar-status .time{font-size:12px}.toolbar-status #graphHint{font-size:10px}}
-@media print{body{background:#fff}.shell{padding:0}.settings,.top-options,.mobile-tabs,.plot-toolbar,.transport,.tool-links,.help,.footer{display:none!important}.workspace{display:block!important}.stage{display:block!important}.panel{box-shadow:none}}
+.graph-hotspot{position:absolute;padding:0;margin:0;min-width:0;min-height:0;border:0;border-radius:0;background:transparent;box-shadow:none;touch-action:auto;cursor:pointer}.graph-hotspot:hover:not(:disabled),.graph-hotspot:active{background:transparent;border-color:transparent;filter:none}.graph-hotspot:focus-visible{outline:3px solid var(--accent);outline-offset:-3px;background:transparent}.graph-hotspot[hidden]{display:none}.graph-tap-hint{display:none;margin:0 16px 6px;color:var(--muted);font-size:11px}.compact .graph-tap-hint{display:block}body.dialog-open{overflow:hidden}.graph-modal{width:min(520px,calc(100% - 24px));max-height:min(90dvh,900px);padding:0;border:1px solid var(--line);border-radius:18px;background:var(--surface);color:var(--text);box-shadow:0 16px 64px #0005;overflow:hidden}.graph-modal[open]{display:flex;flex-direction:column}.graph-modal::backdrop{background:#07132199}.modal-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line);flex:none}.modal-heading h2{font-size:17px}.modal-heading button{font-size:13px;min-width:64px}.modal-body{overflow-y:auto;overscroll-behavior:contain;padding:10px 16px 16px;min-height:0}.modal-description{font-size:12px;color:var(--muted);margin:0 0 12px}.modal-controls>.setting-section:first-child{border-top:0;margin-top:0;padding-top:0}.modal-controls .channel-settings{margin-top:12px}.modal-controls .graph-tools{display:block;padding:14px 0 0}.modal-controls .graph-tools label{display:flex;justify-content:space-between}.modal-controls #themeSetting{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;margin-top:14px}.modal-controls #themeSetting select{font-size:14px}.modal-footer{padding:12px 16px;border-top:1px solid var(--line);background:var(--subtle);display:flex;flex-wrap:wrap;gap:8px;flex:none}.modal-footer button{flex:1;font-size:13px;white-space:nowrap}.modal-footer .primary{min-width:130px}.graph-modal .param-inputs input[type=number]{font-size:16px}.graph-modal .noise-options::before{content:"ノイズ量は振幅に対する倍率です。";font-size:11px;color:var(--muted);display:block;margin-top:8px}
+@media(max-width:560px){.graph-modal{width:calc(100% - 12px);max-height:92dvh;margin:auto auto 6px;border-radius:17px}.modal-body{padding:10px 13px 14px}.modal-heading{padding:11px 13px}.modal-footer{padding:10px 13px max(10px,env(safe-area-inset-bottom))}.graph-tap-hint{font-size:10px;margin-left:13px;margin-right:13px}}
+@media print{body{background:#fff}.shell{padding:0}.settings,.top-options,.mobile-tabs,.plot-toolbar,.transport,.tool-links,.help,.footer,.graph-hotspot,.graph-tap-hint,.graph-modal{display:none!important}.workspace{display:block!important}.stage{display:block!important}.panel{box-shadow:none}}
+.modal-notice{flex:none;padding:8px 16px;background:var(--accent-soft);color:var(--text);font-size:12px;overflow-wrap:anywhere}.modal-notice:empty{display:none}
 </style>
 </head>
 <body data-screen="run">
 <main class="shell">
   <header class="masthead">
     <div class="brand"><svg class="brand-icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M2 16C8-5 24 37 30 16S8 37 2 16 24-5 30 16" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><div><div class="eyebrow">WAVEFORM LAB · PHYSICS</div><h1>リサジュー・スコープ</h1></div></div>
-    <div class="top-options"><label for="theme">配色<select id="theme"><option value="light">ライト</option><option value="dark">ダーク</option><option value="auto">端末に合わせる</option></select></label><label for="layout">画面<select id="layout"><option value="auto">自動</option><option value="compact">小画面モード</option><option value="wide">並べて表示</option></select></label></div>
+    <div class="top-options"><label id="themeSetting" for="theme">配色<select id="theme"><option value="light">ライト</option><option value="dark">ダーク</option><option value="auto">端末に合わせる</option></select></label><label for="layout">画面<select id="layout"><option value="auto">自動</option><option value="compact">モバイル</option><option value="wide">デスクトップ</option></select></label></div>
   </header>
   <nav class="mobile-tabs" role="tablist" aria-label="画面切り替え"><button id="runTab" role="tab" aria-selected="true" aria-controls="runPanel" tabindex="0">01　実行・観察</button><button id="settingsTab" role="tab" aria-selected="false" aria-controls="settingsPanel" tabindex="-1">02　条件設定</button></nav>
   <div class="workspace">
@@ -36,10 +39,15 @@ body.expanded .masthead,body.expanded #settingsPanel,body.expanded .footer,body.
         <div class="stage-heading"><div><div class="kicker">2つの入力から、1つの軌跡へ</div><h2>合成と入力の対応</h2></div><div class="stage-actions"><span class="live-pill"><i class="status-dot" aria-hidden="true"></i><span id="runStatus">準備完了</span></span><button id="expandView" type="button" aria-pressed="false" aria-label="グラフを拡大表示">⤢ 拡大</button></div></div>
         <div class="plot-toolbar" aria-label="グラフの操作">
           <div class="transport" role="group" aria-label="再生と時間幅"><button id="play" class="primary">▶ 再生</button><button id="step" title="シミュレーション時刻を0.1秒進めます">＋0.1秒</button><button id="reset">最初から</button><button id="fitPeriod">時間幅を一周に合わせる</button></div>
-          <div class="graph-tools"><label for="graphSize">グラフの大きさ<select id="graphSize"><option value="fit">画面に合わせる</option><option value="large">大きく</option><option value="max">最大</option></select></label></div>
+          <div id="graphSizeSettings" class="graph-tools"><label for="graphSize">グラフの大きさ<select id="graphSize"><option value="fit">画面に合わせる</option><option value="large">大きく</option><option value="max">最大</option></select></label></div>
           <div class="toolbar-status"><span class="time mono" id="timeReadout">t = 0.000 s</span><span id="graphHint">拡大しても時刻と軌跡を保持</span></div>
         </div>
-        <div class="canvas-wrap"><canvas id="scope" role="img" aria-label="左上にXY合成図、左下にX入力と時間の図、右上に時間とY入力の図。点線は同時刻の値を結びます。"></canvas></div>
+        <p id="graphTapHint" class="graph-tap-hint">グラフをタップして設定：X・Y は各入力、XY は時間・描画など</p>
+        <div class="canvas-wrap"><canvas id="scope" role="img" aria-label="左上にXY合成図、左下にX入力と時間の図、右上に時間とY入力の図。点線は同時刻の値を結びます。"></canvas>
+          <button id="xyGraphSettings" class="graph-hotspot" type="button" hidden aria-label="XYグラフ：時間・描画などの設定を開く" aria-haspopup="dialog" aria-controls="graphSettingsDialog"></button>
+          <button id="xGraphSettings" class="graph-hotspot" type="button" hidden aria-label="X入力グラフ：Xの振動数・位相・波形・振幅を設定" aria-haspopup="dialog" aria-controls="graphSettingsDialog"></button>
+          <button id="yGraphSettings" class="graph-hotspot" type="button" hidden aria-label="Y入力グラフ：Yの振動数・位相・波形・振幅を設定" aria-haspopup="dialog" aria-controls="graphSettingsDialog"></button>
+        </div>
         <div class="legend"><span><i></i>描いた軌跡</span><span><i class="ref-line"></i>全体の参考線</span><span><i class="point-key"></i>現在の点</span></div>
         <div class="progress-track" role="progressbar" aria-label="一周の進行度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress"><i id="progressFill"></i></div>
         <p id="traceDescription" class="trace-description"></p>
@@ -51,9 +59,9 @@ body.expanded .masthead,body.expanded #settingsPanel,body.expanded .footer,body.
     </section>
     <section id="settingsPanel" class="panel settings" aria-label="条件設定">
       <div class="settings-header"><h2>条件設定</h2><button class="quiet" id="defaults">初期条件へ</button></div>
-      <label class="field-label" for="preset">実験プリセット</label><select id="preset" class="full-width"><option value="threeTwo">リサジュー　3 : 2</option><option value="circle">円　1 : 1 ／ 位相差 π/2</option><option value="line">直線　1 : 1 ／ 同位相</option><option value="twoOne">リサジュー　2 : 1</option><option value="sweep">鋸歯状波の掃引　1 : 3</option><option value="triangleSweep">三角波で往復掃引</option><option value="noise">ノイズ付きの円</option><option value="square">矩形波 1 : 2</option><option value="custom" disabled>カスタム条件</option></select>
-      <div class="setting-section"><h3>振動数の入力単位</h3><div class="segmented" role="group" aria-label="振動数の入力単位"><button id="unitOmega" aria-pressed="true">角振動数 ω · rad/s</button><button id="unitHz" aria-pressed="false">振動数 f · Hz</button></div><p class="mode-note">ω = 2πf · 単位を切り替えても波形は変わりません。</p></div>
-      <fieldset class="channel-settings"><legend class="x-color">X 入力 · 横方向</legend>
+      <div id="presetSettings"><label class="field-label" for="preset">実験プリセット</label><select id="preset" class="full-width"><option value="threeTwo">リサジュー　3 : 2</option><option value="circle">円　1 : 1 ／ 位相差 π/2</option><option value="line">直線　1 : 1 ／ 同位相</option><option value="twoOne">リサジュー　2 : 1</option><option value="sweep">鋸歯状波の掃引　1 : 3</option><option value="triangleSweep">三角波で往復掃引</option><option value="noise">ノイズ付きの円</option><option value="square">矩形波 1 : 2</option><option value="custom" disabled>カスタム条件</option></select></div>
+      <div id="unitSettings" class="setting-section"><h3>振動数の入力単位</h3><div class="segmented" role="group" aria-label="振動数の入力単位"><button id="unitOmega" aria-pressed="true">角振動数 ω · rad/s</button><button id="unitHz" aria-pressed="false">振動数 f · Hz</button></div><p class="mode-note">ω = 2πf · 単位を切り替えても波形は変わりません。</p></div>
+      <fieldset id="xSettings" class="channel-settings"><legend class="x-color">X 入力 · 横方向</legend>
         <div id="xControls" class="param-host"></div>
         <details id="xAdvanced" class="channel-advanced"><summary>波形・振幅<span id="xAdvancedSummary">正弦波 / A = 1</span></summary>
           <div class="wave-choice"><label class="sr-only" for="kindX">Xの波形</label><select id="kindX" class="full-width"><option value="sin">正弦波 sin</option><option value="noisySin">ノイズ付き正弦波</option><option value="saw">鋸歯状波 saw</option><option value="triangle">三角波 triangle</option><option value="square">矩形波 square</option></select></div>
@@ -61,7 +69,7 @@ body.expanded .masthead,body.expanded #settingsPanel,body.expanded .footer,body.
           <div id="xNoiseOptions" class="noise-options" hidden><div id="xNoiseControls" class="param-host"></div><button id="xReseed" type="button">ノイズを変える</button></div>
         </details>
       </fieldset>
-      <fieldset class="channel-settings"><legend class="y-color">Y 入力 · 縦方向</legend>
+      <fieldset id="ySettings" class="channel-settings"><legend class="y-color">Y 入力 · 縦方向</legend>
         <div id="yControls" class="param-host"></div>
         <details id="yAdvanced" class="channel-advanced"><summary>波形・振幅<span id="yAdvancedSummary">正弦波 / A = 1</span></summary>
           <div class="wave-choice"><label class="sr-only" for="kindY">Yの波形</label><select id="kindY" class="full-width"><option value="sin">正弦波 sin</option><option value="noisySin">ノイズ付き正弦波</option><option value="saw">鋸歯状波 saw</option><option value="triangle">三角波 triangle</option><option value="square">矩形波 square</option></select></div>
@@ -69,14 +77,20 @@ body.expanded .masthead,body.expanded #settingsPanel,body.expanded .footer,body.
           <div id="yNoiseOptions" class="noise-options" hidden><div id="yNoiseControls" class="param-host"></div><button id="yReseed" type="button">ノイズを変える</button></div>
         </details>
       </fieldset>
-      <div class="setting-section"><label class="field-label" for="traceMode">軌跡の表示</label><select id="traceMode" class="full-width"><option value="continuous">連続 · 開始から蓄積</option><option value="window">連続 · 直近の時間窓</option><option value="cycle">一周だけ描いて停止</option></select><p id="cycleNote" class="mode-note"></p>
+      <div id="viewSettings" class="setting-section"><label class="field-label" for="traceMode">軌跡の表示</label><select id="traceMode" class="full-width"><option value="continuous">連続 · 開始から蓄積</option><option value="window">連続 · 直近の時間窓</option><option value="cycle">一周だけ描いて停止</option></select><p id="cycleNote" class="mode-note"></p>
         <details id="viewOptions" class="view-options"><summary>時間・表示オプション</summary><div id="timeControls"></div><div class="checks"><label><input id="showMarker" type="checkbox" checked>XY の現在点</label><label><input id="showGuides" type="checkbox" checked>対応の点線</label><label><input id="showReference" type="checkbox" checked>全体の参考線</label><label><input id="showGrid" type="checkbox" checked>目盛りとグリッド</label></div></details>
       </div>
       <button class="primary start-from-settings" id="applyRun">実行画面で再生 ▶</button>
     </section>
   </div>
-  <footer class="footer"><span>リサジュー・スコープ v5.1.2 · オフライン対応</span><span>振幅は任意単位 / 位相は rad</span></footer>
+  <footer class="footer"><span>リサジュー・スコープ v5.2 · オフライン対応</span><span>振幅は任意単位 / 位相は rad</span></footer>
 </main>
+<dialog id="graphSettingsDialog" class="graph-modal" aria-labelledby="graphSettingsTitle" aria-describedby="graphSettingsDescription">
+  <div class="modal-heading"><h2 id="graphSettingsTitle">グラフの設定</h2><button id="graphSettingsClose" type="button" autofocus>閉じる</button></div>
+  <div class="modal-body"><p id="graphSettingsDescription" class="modal-description"></p><div id="graphSettingsContent" class="modal-controls"></div></div>
+  <p id="graphSettingsAnnouncement" class="modal-notice" role="status" aria-live="polite"></p>
+  <div class="modal-footer"><button id="graphSettingsAll" type="button">設定ページへ</button><button id="graphSettingsResume" type="button" class="primary">閉じて再生 ▶</button></div>
+</dialog>
 <div id="announcement" class="toast" role="status" aria-live="polite"></div>
 <noscript>このシミュレーターを利用するには、ブラウザーでJavaScriptを有効にしてください。</noscript>
 <script>
@@ -244,6 +258,92 @@ const ScopeMath = (() => {
 })();
 
 'use strict';
+// Reuse the existing controls in a modal; IDs, event handlers, and values stay shared.
+const ScopePopup=(()=>{
+  function create({isMobile,pause,play,openAllSettings,afterClose}){
+    const $=id=>document.getElementById(id);
+    const dialog=$('graphSettingsDialog'),content=$('graphSettingsContent');
+    const groups={
+      x:{title:'X 入力の設定',ids:['unitSettings','xSettings'],details:'xAdvanced'},
+      y:{title:'Y 入力の設定',ids:['unitSettings','ySettings'],details:'yAdvanced'},
+      xy:{title:'XY · 時間と表示の設定',ids:['presetSettings','viewSettings','themeSetting','graphSizeSettings'],details:'viewOptions'}
+    };
+    const hotspots=Object.fromEntries(['xy','x','y'].map(kind=>[kind,$(kind+'GraphSettings')]));
+    let session=null,backdropStart=false;
+    function focusVisible(element){if(element?.getClientRects().length)element.focus({preventScroll:true});}
+    function close({resume=false,allSettings=false,restoreFocus=true}={}){
+      if(!session)return false;
+      // Blur first so direct numeric entry is committed before moving its input.
+      if(dialog.contains(document.activeElement))document.activeElement.blur();
+      const old=session;session=null;
+      for(const item of old.details)item.node.open=item.open;
+      for(const item of old.slots)item.slot.replaceWith(item.node);
+      document.body.classList.remove('dialog-open');
+      if(dialog.open)dialog.close();
+      afterClose();
+      if(allSettings){openAllSettings();focusVisible($('settingsTab'));}
+      else{
+        if(resume)play();
+        if(restoreFocus&&isMobile())focusVisible(old.trigger);
+      }
+      return true;
+    }
+    function open(kind){
+      if(!isMobile()||!groups[kind])return false;
+      if(session?.kind===kind&&dialog.open)return true;
+      close({restoreFocus:false});
+      pause();
+      if(typeof dialog.showModal!=='function'){openAllSettings();return false;}
+      const group=groups[kind],slots=[];
+      for(const id of group.ids){
+        const node=$(id),slot=document.createComment('return '+id);
+        node.before(slot);content.appendChild(node);slots.push({node,slot});
+      }
+      const details=Array.from(content.querySelectorAll('details'),node=>({node,open:node.open}));
+      session={kind,slots,details,trigger:hotspots[kind]};
+      $(group.details).open=true;
+      $('graphSettingsTitle').textContent=group.title;
+      $('graphSettingsDescription').textContent=kind==='xy'?'一時停止中です。時間幅・再生速度・軌跡・配色などを設定できます。':'一時停止中です。変更は設定ページにも反映され、入力条件を変えると t = 0 に戻ります。';
+      document.body.classList.add('dialog-open');
+      try{dialog.showModal();}catch{close({allSettings:true,restoreFocus:false});return false;}
+      dialog.querySelector('.modal-body').scrollTop=0;
+      $('graphSettingsClose').focus({preventScroll:true});
+      return true;
+    }
+    function setEnabled(enabled){
+      for(const button of Object.values(hotspots))button.hidden=!enabled;
+      if(!enabled&&session){
+        close({restoreFocus:false});
+        const target=$('layout').getClientRects().length?$('layout'):$('play');focusVisible(target);
+      }
+    }
+    function layout(g){
+      if(!g)return;
+      const rectangles={xy:[g.left,g.top,g.side,g.side],x:[g.left,g.xtY,g.side,g.timeHeight],y:[g.ytX,g.top,g.timeWidth,g.side]};
+      for(const [kind,[left,top,width,height]] of Object.entries(rectangles))Object.assign(hotspots[kind].style,{left:left+'px',top:top+'px',width:width+'px',height:height+'px'});
+    }
+    for(const [kind,button] of Object.entries(hotspots)){
+      let start=null,dragged=false;
+      button.addEventListener('pointerdown',event=>{start={x:event.clientX,y:event.clientY,id:event.pointerId};dragged=false;});
+      button.addEventListener('pointermove',event=>{if(start&&event.pointerId===start.id&&Math.hypot(event.clientX-start.x,event.clientY-start.y)>10)dragged=true;});
+      button.addEventListener('pointercancel',()=>{dragged=true;start=null;});
+      button.addEventListener('click',event=>{if(event.detail>0&&dragged)return;start=null;open(kind);});
+    }
+    $('graphSettingsClose').addEventListener('click',()=>close());
+    $('graphSettingsResume').addEventListener('click',()=>close({resume:true}));
+    $('graphSettingsAll').addEventListener('click',()=>close({allSettings:true,restoreFocus:false}));
+    dialog.addEventListener('cancel',event=>{event.preventDefault();close();});
+    // close events can arrive after another popup has already been opened.
+    dialog.addEventListener('close',()=>{if(!dialog.open)close();});
+    const outside=event=>{const r=dialog.getBoundingClientRect();return event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom;};
+    dialog.addEventListener('pointerdown',event=>{backdropStart=event.target===dialog&&outside(event);});
+    dialog.addEventListener('click',event=>{if(backdropStart&&event.target===dialog&&outside(event))close();backdropStart=false;});
+    return Object.freeze({open,close,setEnabled,layout,isOpen:()=>dialog.open});
+  }
+  return Object.freeze({create});
+})();
+
+'use strict';
 (() => {
   const $ = id => document.getElementById(id);
   const {TAU, wave, cycleInfo, sample} = ScopeMath;
@@ -266,8 +366,10 @@ const ScopeMath = (() => {
   const darkPreference = matchMedia('(prefers-color-scheme: dark)');
   const compactPreference = matchMedia('(max-width: 1000px)');
   function notify(message) {
-    $('announcement').textContent=message; clearTimeout(toastTimer);
-    toastTimer=setTimeout(()=>{$('announcement').textContent='';},4500);
+    const notices=[$('announcement'),$('graphSettingsAnnouncement')];
+    notices.forEach(node=>node.textContent='');clearTimeout(toastTimer);
+    notices[$('graphSettingsDialog').open?1:0].textContent=message;
+    toastTimer=setTimeout(()=>{notices.forEach(node=>node.textContent='');},4500);
   }
   function savePreference(key,value){try{localStorage.setItem('lissajous-v5-'+key,value);}catch{}}
   function readPreference(key,fallback){try{return localStorage.getItem('lissajous-v5-'+key)||fallback;}catch{return fallback;}}
@@ -283,6 +385,7 @@ const ScopeMath = (() => {
     state.layout=value; $('layout').value=value;
     const compact=value==='compact'||(value==='auto'&&compactPreference.matches);
     document.body.classList.toggle('compact',compact); document.body.classList.toggle('wide',value==='wide');
+    popup.setEnabled(compact);
     for (const id of ['runPanel','settingsPanel']) {
       if(compact){$(id).setAttribute('role','tabpanel');$(id).setAttribute('aria-labelledby',id==='runPanel'?'runTab':'settingsTab');}
       else{$(id).removeAttribute('role');$(id).removeAttribute('aria-labelledby');}
@@ -294,6 +397,7 @@ const ScopeMath = (() => {
     for(const id of ['run','settings']){const button=$(id+'Tab');button.setAttribute('aria-selected',String(state.screen===id));button.tabIndex=state.screen===id?0:-1;}
   }
   function switchScreen(screen){
+    popup.close({restoreFocus:false});
     if(screen==='settings'&&state.expanded)setExpanded(false);
     if(screen==='settings')pause();
     state.screen=screen;document.body.dataset.screen=screen;updateTabs();resize();
@@ -465,6 +569,7 @@ const ScopeMath = (() => {
     const left=baseLeft+Math.max(0,available-side-timeWidth)/2;
     const h=top+side+verticalGap+timeHeight+bottom;
     geometry={w,h,left,top,side,gap,verticalGap,right,timeWidth,timeHeight,small,viewportWidth,ytX:left+side+gap,xtY:top+side+verticalGap};
+    popup.layout(geometry);
     const dpr=Math.min(devicePixelRatio||1,2.5);canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);canvas.style.width=w+'px';canvas.style.height=h+'px';
     $('graphHint').textContent=w>viewportWidth+1?'図の中を左右にスクロールできます':state.expanded?'「元の表示」または Esc で戻れます':'拡大しても時刻と軌跡を保持';
     if(w<=viewportWidth+1)canvas.parentElement.scrollLeft=0;
@@ -562,6 +667,14 @@ const ScopeMath = (() => {
     for(const [i,k] of ['x','y'].entries()){const v=state[k];c.fillStyle=colors[k];c.fillText(k.toUpperCase()+' '+names[v.kind]+' : A='+pretty(v.amp)+'  ω='+pretty(v.omega,4)+' rad/s  φ='+pretty(v.phase,4)+' rad'+(v.kind==='noisySin'?'  N='+pretty(v.noise)+' × A':''),14,graphHeight+82+i*20);}
     const link=document.createElement('a');link.download='lissajous-'+state.t.toFixed(3)+'s.png';link.href=output.toDataURL('image/png');link.click();
   }
+  const popup=ScopePopup.create({
+    isMobile:()=>document.body.classList.contains('compact')&&state.screen==='run',
+    pause,play,openAllSettings:()=>switchScreen('settings'),afterClose:()=>{
+      const message=$('graphSettingsAnnouncement').textContent;
+      if(message)notify(message);
+      resize();
+    }
+  });
   buildControls();
   $('theme').addEventListener('change',e=>setTheme(e.target.value));$('layout').addEventListener('change',e=>setLayout(e.target.value));
   $('unitOmega').addEventListener('click',()=>setUnit('omega'));$('unitHz').addEventListener('click',()=>setUnit('hz'));
@@ -586,6 +699,7 @@ const ScopeMath = (() => {
   $('fitPeriod').addEventListener('click',()=>{if(cycle?.period){state.win=clamp(cycle.period,1,60);syncControl(definitions.find(d=>d.key==='win'));updateConditions();draw();if(cycle.period<1||cycle.period>60)notify('表示幅の範囲（1～60秒）に調整しました。');}});
   $('saveImage').addEventListener('click',saveImage);
   document.addEventListener('keydown',e=>{
+    if(popup.isOpen())return;
     if(e.key==='Escape'&&state.expanded){setExpanded(false);$('expandView').focus();return;}
     if(e.code==='Space'&&!e.repeat&&!['INPUT','SELECT','TEXTAREA','BUTTON','SUMMARY'].includes(e.target.tagName)&&state.screen==='run'){e.preventDefault();state.running?pause():play();}
   });
