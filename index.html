@@ -18,7 +18,9 @@
 .stage-actions{display:flex;align-items:center;gap:8px;flex:none}.stage-actions button{font-size:12px;min-height:44px;padding:7px 11px;white-space:nowrap}.graph-tools{display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:0 20px 9px}.graph-tools label{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted)}.graph-tools select{font-size:12px;min-height:44px;padding-top:6px;padding-bottom:6px}.canvas-wrap{max-width:none;overflow-x:auto;overscroll-behavior-x:contain}.graph-tools{flex-wrap:wrap}.graph-tools #graphHint{font-size:10px;color:var(--muted)}.settings-header{margin-bottom:10px}.setting-section{margin-top:12px;padding-top:11px}.setting-section h3{margin-bottom:7px}.mode-note{line-height:1.55}.channel-settings,.compact .channel-settings{display:block;margin-top:12px;padding-top:6px}.param{margin-top:7px}.param-label{margin-bottom:3px;line-height:1.4}.param-inputs{display:grid;grid-template-columns:minmax(60px,1fr) 164px;gap:8px;align-items:center}.param-inputs .number-control{grid-template-columns:44px minmax(0,1fr) 44px;gap:4px}.param-inputs input[type=range]{width:100%;height:44px;margin:0;min-width:0}.param-inputs input[type=number]{min-width:0;padding:5px 3px;font-size:16px;min-height:44px}.param-inputs .stepper{min-width:44px;min-height:44px;font-size:11px}.frequency-note{font-size:10px;min-height:14px;line-height:1.4;margin-top:1px}.channel-advanced,.view-options{margin-top:9px;border:1px solid var(--line);border-radius:10px;background:var(--subtle)}.channel-advanced summary,.view-options summary{cursor:pointer;min-height:44px;padding:10px 11px;font-size:12px;font-weight:650;line-height:1.8}.channel-advanced summary span{font-size:10px;color:var(--muted);font-weight:400;margin-left:7px}.channel-advanced[open],.view-options[open]{padding-bottom:10px}.channel-advanced>div,.view-options>div{margin-left:10px;margin-right:10px}.channel-advanced .wave-choice{margin-top:2px}.channel-advanced .wave-choice select{min-height:44px}.noise-options[hidden]{display:none}.noise-options button{width:100%;font-size:12px;margin-top:7px;min-height:44px}.view-options .checks{margin-top:8px}.start-from-settings{margin-top:12px}
 body.expanded .masthead,body.expanded #settingsPanel,body.expanded .footer,body.expanded .mobile-tabs,body.expanded .readout,body.expanded .caption,body.expanded .tool-links,body.expanded .help{display:none!important}body.expanded #runPanel{display:block!important}body.expanded .shell{max-width:none;min-width:0;padding:8px}body.expanded .workspace{display:block;max-width:none;margin:0;grid-template-columns:1fr}body.expanded .canvas-wrap{max-width:none;width:auto;margin:0 6px}body.expanded .stage-heading{padding:7px 12px 4px}body.expanded .stage-heading h2{font-size:14px}body.expanded .kicker{display:none}body.expanded .graph-tools{padding:0 12px 4px}body.expanded .legend{padding:0 13px 5px}body.expanded .transport{padding:8px 12px}body.expanded .trace-description{min-height:0;padding:5px 12px;font-size:11px}body.expanded #expandView{display:inline-block!important}
 @media(max-width:560px){.stage-heading{align-items:flex-start;flex-wrap:wrap}.stage-actions{margin-left:auto;gap:5px}.stage-actions button{padding:7px 9px}.graph-tools{padding:0 12px 7px}.compact .settings{padding:14px}.param{margin-top:7px}.channel-advanced summary span{font-size:10px}.param-inputs{grid-template-columns:minmax(60px,1fr) 164px;gap:7px}body.expanded .stage-heading{align-items:center}body.expanded .graph-tools label{font-size:10px}}
-@media print{body{background:#fff}.shell{padding:0}.settings,.top-options,.mobile-tabs,.transport,.tool-links,.help,.footer{display:none!important}.workspace{display:block!important}.stage{display:block!important}.panel{box-shadow:none}}
+.plot-toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;padding:0 20px 12px}.plot-toolbar .transport{flex:1 1 auto;padding:0;border:0;background:transparent;gap:7px}.plot-toolbar .transport button{font-size:13px;white-space:nowrap}.plot-toolbar .graph-tools{flex:0 1 auto;padding:0}.toolbar-status{flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 12px;color:var(--muted)}.toolbar-status .time{font-size:13px;white-space:nowrap}.toolbar-status #graphHint{font-size:10px}body.expanded .plot-toolbar{padding:0 12px 8px}body.expanded .plot-toolbar .transport,body.expanded .plot-toolbar .graph-tools{padding:0}
+@media(max-width:560px){.plot-toolbar{padding:0 12px 10px;gap:7px}.plot-toolbar .transport{gap:6px}.plot-toolbar .transport button{font-size:12px}.plot-toolbar .graph-tools{margin-left:auto}.toolbar-status .time{font-size:12px}.toolbar-status #graphHint{font-size:10px}}
+@media print{body{background:#fff}.shell{padding:0}.settings,.top-options,.mobile-tabs,.plot-toolbar,.transport,.tool-links,.help,.footer{display:none!important}.workspace{display:block!important}.stage{display:block!important}.panel{box-shadow:none}}
 </style>
 </head>
 <body data-screen="run">
@@ -32,16 +34,19 @@ body.expanded .masthead,body.expanded #settingsPanel,body.expanded .footer,body.
     <section id="runPanel" class="stage" aria-label="実行・観察">
       <div class="panel">
         <div class="stage-heading"><div><div class="kicker">2つの入力から、1つの軌跡へ</div><h2>合成と入力の対応</h2></div><div class="stage-actions"><span class="live-pill"><i class="status-dot" aria-hidden="true"></i><span id="runStatus">準備完了</span></span><button id="expandView" type="button" aria-pressed="false" aria-label="グラフを拡大表示">⤢ 拡大</button></div></div>
-        <div class="graph-tools"><label for="graphSize">グラフの大きさ<select id="graphSize"><option value="fit">画面に合わせる</option><option value="large">大きく</option><option value="max">最大</option></select></label><span id="graphHint">拡大しても時刻と軌跡を保持</span></div>
+        <div class="plot-toolbar" aria-label="グラフの操作">
+          <div class="transport" role="group" aria-label="再生と時間幅"><button id="play" class="primary">▶ 再生</button><button id="step" title="シミュレーション時刻を0.1秒進めます">＋0.1秒</button><button id="reset">最初から</button><button id="fitPeriod">時間幅を一周に合わせる</button></div>
+          <div class="graph-tools"><label for="graphSize">グラフの大きさ<select id="graphSize"><option value="fit">画面に合わせる</option><option value="large">大きく</option><option value="max">最大</option></select></label></div>
+          <div class="toolbar-status"><span class="time mono" id="timeReadout">t = 0.000 s</span><span id="graphHint">拡大しても時刻と軌跡を保持</span></div>
+        </div>
         <div class="canvas-wrap"><canvas id="scope" role="img" aria-label="左上にXY合成図、左下にX入力と時間の図、右上に時間とY入力の図。点線は同時刻の値を結びます。"></canvas></div>
         <div class="legend"><span><i></i>描いた軌跡</span><span><i class="ref-line"></i>全体の参考線</span><span><i class="point-key"></i>現在の点</span></div>
-        <div class="transport"><button id="play" class="primary">▶ 再生</button><button id="step" title="シミュレーション時刻を0.1秒進めます">＋0.1秒</button><button id="reset">最初から</button><span class="time mono" id="timeReadout">t = 0.000 s</span></div>
         <div class="progress-track" role="progressbar" aria-label="一周の進行度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress"><i id="progressFill"></i></div>
         <p id="traceDescription" class="trace-description"></p>
       </div>
       <div class="readout" aria-label="現在のシミュレーション条件"><article class="channel-readout"><h3 class="x-color"><i class="channel-dot" aria-hidden="true"></i>X 入力 <span id="xKindText"></span></h3><p class="equation mono" id="xEquation"></p><p id="xParameters" class="mono"></p><p id="xValue" class="mono"></p></article><article class="channel-readout"><h3 class="y-color"><i class="channel-dot" aria-hidden="true"></i>Y 入力 <span id="yKindText"></span></h3><p class="equation mono" id="yEquation"></p><p id="yParameters" class="mono"></p><p id="yValue" class="mono"></p></article></div>
       <p class="caption">X は下の図と横軸を、Y は右の図と縦軸を共有。点線をたどると、同じ時刻の入力が XY の1点になります。</p>
-      <div class="tool-links"><button id="saveImage">図をPNGで保存</button><button id="fitPeriod">時間幅を一周に合わせる</button></div>
+      <div class="tool-links"><button id="saveImage">図をPNGで保存</button></div>
       <details class="help"><summary>見方と操作のヒント</summary><div class="help-body"><p><strong>正弦波</strong>：x(t) = Aₓ sin(ωₓt + φₓ)、y(t) = Aᵧ sin(ωᵧt + φᵧ)。振動数 f = ω / 2π です。X と Y を同じ振動数にして位相差を変えると、直線・楕円・円の違いを観察できます。</p><p><strong>鋸歯状波</strong>：一定速度で増加し、+A から −A へ戻ります。X を鋸歯状波にすると、横方向の掃引と Y 入力の関係が見えます。戻る瞬間の線は描きません。</p><p><strong>三角波・矩形波</strong>：三角波は一定の速さで増減し、矩形波は2つの値を交互にとります。正弦波と切り替えて、入力波形の形が XY の軌跡にどう現れるか比較できます。</p><p><strong>ノイズ付き正弦波</strong>：「波形・振幅」を開くと、ノイズ量を調整できます。「ノイズを変える」で別のノイズへ切り替えられます。ノイズが加わると同じ軌跡を周期的に繰り返さなくなるため、一周表示と全体の参考線は利用できません。ノイズ量を 0 にすると正弦波として扱います。</p><p><strong>一周</strong>：動く2入力の位相が初めて同時に戻る共通周期 T です。振動数比 fₓ : fᵧ = p : q（既約）のとき T = p/fₓ = q/fᵧ。一周モードでは T で停止し、結果を残します。p, q がともに64以下で一致する比を判定します。近い比を無理に閉曲線とは扱いません。</p><p><strong>操作</strong>：数値は入力後に Enter または欄の外を押すと確定します。±0.1 は表示中の単位で増減します。波形・振幅・振動数・位相を変えると t = 0 へ戻ります。速度・時間幅・配色の変更では時刻を維持します。設定画面に移ると一時停止します。</p><p><strong>時間軸</strong>：X 入力では下向き、Y 入力では右向きに時間が進みます。両方とも同じ時間範囲で、目盛りは開始からの秒数です。スペースキーで再生／停止（入力欄の操作中を除く）。別タブに移った間はシミュレーション時間を進めません。</p></div></details>
     </section>
     <section id="settingsPanel" class="panel settings" aria-label="条件設定">
@@ -70,7 +75,7 @@ body.expanded .masthead,body.expanded #settingsPanel,body.expanded .footer,body.
       <button class="primary start-from-settings" id="applyRun">実行画面で再生 ▶</button>
     </section>
   </div>
-  <footer class="footer"><span>リサジュー・スコープ v5.1.1 · オフライン対応</span><span>振幅は任意単位 / 位相は rad</span></footer>
+  <footer class="footer"><span>リサジュー・スコープ v5.1.2 · オフライン対応</span><span>振幅は任意単位 / 位相は rad</span></footer>
 </main>
 <div id="announcement" class="toast" role="status" aria-live="polite"></div>
 <noscript>このシミュレーターを利用するには、ブラウザーでJavaScriptを有効にしてください。</noscript>
@@ -449,7 +454,8 @@ const ScopeMath = (() => {
     // Keep this ratio fixed across sizes, breakpoints, and expanded mode.
     const timeRatio=.40,available=w-baseLeft-right-gap;
     const panel=$('runPanel').querySelector('.panel');
-    const controlsHeight=['.legend','.transport','.progress-track','.trace-description'].reduce((n,selector)=>n+(panel.querySelector(selector)?.getBoundingClientRect().height||0),0);
+    // The playback toolbar is above the canvas, so topOffset already includes it.
+    const controlsHeight=['.legend','.progress-track','.trace-description'].reduce((n,selector)=>n+(panel.querySelector(selector)?.getBoundingClientRect().height||0),0);
     const topOffset=canvas.parentElement.getBoundingClientRect().top+scrollY;
     const fitHeight=Math.max(260,innerHeight-topOffset-controlsHeight-22);
     const sideByHeight=Math.max(130,(fitHeight-top-verticalGap-bottom)/(1+timeRatio));
@@ -585,7 +591,9 @@ const ScopeMath = (() => {
   });
   document.addEventListener('visibilitychange',()=>{lastTimestamp=null;if(document.hidden){if(frameId!==null){cancelAnimationFrame(frameId);frameId=null;}}else if(state.running&&frameId===null){frameId=requestAnimationFrame(tick);}});
   darkPreference.addEventListener('change',()=>{if(state.theme==='auto')setTheme('auto');});compactPreference.addEventListener('change',()=>{if(state.layout==='auto')setLayout('auto');});
-  new ResizeObserver(resize).observe(canvas.parentElement);
+  const layoutObserver=new ResizeObserver(resize);
+  layoutObserver.observe(canvas.parentElement);
+  layoutObserver.observe(document.querySelector('.plot-toolbar'));
   window.addEventListener('resize',resize);
   const storedTheme=readPreference('theme','light'),storedLayout=readPreference('layout','auto'),storedSize=readPreference('graphSize','fit');
   state.graphSize=['fit','large','max'].includes(storedSize)?storedSize:'fit';$('graphSize').value=state.graphSize;
